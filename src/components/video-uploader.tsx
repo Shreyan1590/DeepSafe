@@ -12,7 +12,7 @@ interface VideoUploaderProps {
   isLoading: boolean;
 }
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024; // 10GB
 
 export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -32,7 +32,7 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
         toast({
             variant: 'destructive',
             title: 'File Too Large',
-            description: `Please upload a video smaller than ${MAX_FILE_SIZE / 1024 / 1024}MB.`,
+            description: `Please upload a video smaller than ${MAX_FILE_SIZE / 1024 / 1024 / 1024}GB.`,
         });
         return false;
     }
@@ -115,7 +115,7 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
               <Button variant="outline" size="lg" disabled={isLoading}>
                 Browse Files
               </Button>
-               <p className="text-xs text-muted-foreground mt-4">Max file size: 50MB</p>
+               <p className="text-xs text-muted-foreground mt-4">Max file size: 10GB</p>
             </div>
           )}
         </div>
