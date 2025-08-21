@@ -125,14 +125,14 @@ export default function DashboardPage() {
   
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Skeleton className="h-screen w-full" />
+      <div className="flex items-center justify-center min-h-screen bg-background dark">
+        <Skeleton className="h-screen w-full bg-card" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background dark:bg-background">
+    <div className="flex flex-col min-h-screen bg-background dark">
       <Header />
       <main className="flex-1 container mx-auto p-4 md:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -157,21 +157,21 @@ export default function DashboardPage() {
 
 function LoadingSkeleton() {
     return (
-      <Card>
+      <Card className="bg-card/50 border-border/50">
         <CardContent className="p-6">
-          <div className="space-y-6">
+          <div className="space-y-6 animate-pulse">
             <div className="flex justify-between items-center">
-                <Skeleton className="h-8 w-1/3" />
-                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-8 w-1/3 bg-muted" />
+                <Skeleton className="h-8 w-24 bg-muted" />
             </div>
             <div className="space-y-4">
-                <Skeleton className="h-6 w-1/4" />
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-6 w-1/4 bg-muted" />
+                <Skeleton className="h-10 w-full bg-muted" />
             </div>
             <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-full bg-muted" />
+                <Skeleton className="h-4 w-full bg-muted" />
+                <Skeleton className="h-4 w-3/4 bg-muted" />
             </div>
           </div>
         </CardContent>

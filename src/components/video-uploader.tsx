@@ -47,7 +47,7 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(true);
+    if (!isLoading) setIsDragging(true);
   };
 
   const onDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
@@ -60,7 +60,7 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    if (!isLoading && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleFile(e.dataTransfer.files[0]);
     }
   };
@@ -72,14 +72,14 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
   };
 
   const triggerFileSelect = () => {
-    fileInputRef.current?.click();
+    if (!isLoading) fileInputRef.current?.click();
   }
 
   return (
-    <Card>
+    <Card className="bg-card/50 border-border/50">
       <CardHeader>
         <CardTitle className="font-headline text-2xl">Upload Video</CardTitle>
-        <CardDescription>Drag & drop a video file or click to select one for deepfake analysis.</CardDescription>
+        <CardDescription className="text-muted-foreground">Drag & drop a video file or click to select one for deepfake analysis.</CardDescription>
       </CardHeader>
       <CardContent>
         <div
@@ -87,8 +87,9 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           onClick={triggerFileSelect}
-          className={`relative flex flex-col items-center justify-center w-full p-10 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-300
-            ${isDragging ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50 hover:bg-muted/50'}
+          className={`relative group flex flex-col items-center justify-center w-full p-10 border-2 border-dashed rounded-lg transition-colors duration-300
+            ${isLoading ? 'cursor-not-allowed bg-muted/30' : 'cursor-pointer'}
+            ${isDragging ? 'border-primary bg-primary/10' : 'border-border/50 hover:border-primary/50 hover:bg-muted/50'}
           `}
         >
           <input
@@ -107,7 +108,7 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
             </div>
           ) : (
             <div className="flex flex-col items-center gap-4 text-center">
-              <UploadCloud className="h-12 w-12 text-muted-foreground group-hover:text-primary transition-colors" />
+              <UploadCloud className="h-12 w-12 text-muted-foreground transition-colors group-hover:text-primary" />
               <p className="font-semibold text-lg">Drag & drop your video here</p>
               <p className="text-muted-foreground">or</p>
               <Button variant="outline" size="lg" disabled={isLoading}>

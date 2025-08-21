@@ -6,79 +6,86 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ShieldCheck, ArrowRight, BookUser } from 'lucide-react';
+import { ShieldCheck, ArrowRight, GaugeCircle, ScanEye, ShieldAlert } from 'lucide-react';
 
 export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <header className="py-4 px-4 md:px-6 bg-card border-b sticky top-0 z-50">
+    <div className="flex flex-col min-h-screen bg-background dark">
+      <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ShieldCheck className="h-7 w-7 md:h-8 md:w-8 text-primary" />
-            <h1 className="text-xl md:text-2xl font-headline font-bold text-foreground">
+            <ShieldCheck className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl font-headline font-bold text-foreground">
               DeepSafe
             </h1>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => router.push('/login')}>
-              Login / Sign Up
+              Login
+            </Button>
+            <Button onClick={() => router.push('/login')}>
+              Sign Up <ArrowRight className="ml-2" />
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center">
+      <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center text-center">
         <div className="w-full max-w-4xl space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-headline text-3xl text-center">About DeepSafe</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6 text-lg text-muted-foreground leading-relaxed">
-                 <section>
-                    <h2 className="text-2xl font-semibold text-foreground mb-2">What is DeepSafe?</h2>
-                    <p>
-                        DeepSafe is a prototype application designed to detect deepfakes in video content.
-                        Using advanced AI models, this tool analyzes video files to identify signs of manipulation,
-                        helping users distinguish between authentic and synthetically generated media. As the line
-                        between real and fake blurs, DeepSafe provides a crucial first line of defense against
-                        digital misinformation.
-                    </p>
-                </section>
-                <section>
-                    <h2 className="text-2xl font-semibold text-foreground mb-2">How to Use It</h2>
-                    <p>
-                        Using DeepSafe is simple. Sign up or log in, then upload a video file through the main interface. The application
-                        will process the video and provide a comprehensive analysis, including a confidence score
-                        indicating the likelihood of the video being a deepfake. The results are displayed in an
-                        easy-to-understand format, allowing you to quickly assess the video's authenticity.
-                    </p>
-                </section>
-                <section>
-                    <h2 className="text-2xl font-semibold text-foreground mb-2">Accuracy and Limitations</h2>
-                    <p>
-                        As a prototype, DeepSafe's analysis is intended for informational purposes and should not be
-                        considered a definitive judgment. The accuracy of deepfake detection can vary based on the
-                        quality of the video, the sophistication of the manipulation techniques used, and the
-                        constantly evolving nature of AI-generated content. While we strive for high accuracy,
-                        the results from DeepSafe do not constitute a guarantee.
-                    </p>
-                </section>
-                 <section>
-                    <h2 className="text-2xl font-semibold text-foreground mb-2">The Bigger Picture</h2>
-                    <p>
-                        DeepSafe is more than just a tool; it's part of a larger conversation about the ethical
-                        implications of AI and the importance of media literacy in the digital age. We encourage
-                        users to think critically about the content they consume and to use DeepSafe as one of
-                        many resources in the fight against misinformation.
-                    </p>
-                </section>
-              </CardContent>
-            </Card>
+            <div className="space-y-4">
+                <h2 className="text-5xl md:text-6xl font-headline font-bold text-foreground leading-tight">
+                    Detect Deepfakes with Confidence
+                </h2>
+                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+                    DeepSafe is an advanced AI-powered tool that analyzes video content to identify sophisticated deepfake manipulations. Protect yourself from misinformation and verify the authenticity of your media.
+                </p>
+                <div className="flex justify-center gap-4">
+                     <Button size="lg" onClick={() => router.push('/dashboard')}>Get Started for Free <ArrowRight className="ml-2" /></Button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                <Card className="bg-card/50 border-border/50">
+                    <CardHeader className="flex flex-row items-center gap-4">
+                        <ScanEye className="h-10 w-10 text-primary" />
+                        <CardTitle>Advanced Analysis</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">
+                            Leverages state-of-the-art AI models to perform in-depth analysis of video frames, audio, and metadata to detect subtle signs of manipulation.
+                        </p>
+                    </CardContent>
+                </Card>
+                 <Card className="bg-card/50 border-border/50">
+                    <CardHeader className="flex flex-row items-center gap-4">
+                        <GaugeCircle className="h-10 w-10 text-primary" />
+                        <CardTitle>Confidence Score</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">
+                            Receive a clear, percentage-based confidence score that indicates the likelihood of a video being a deepfake, making it easy to interpret results.
+                        </p>
+                    </CardContent>
+                </Card>
+                 <Card className="bg-card/50 border-border/50">
+                    <CardHeader className="flex flex-row items-center gap-4">
+                        <ShieldAlert className="h-10 w-10 text-primary" />
+                        <CardTitle>Use with Caution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">
+                            As a prototype, our detection is highly effective but not infallible. Always consider the results as a strong indicator, not a final verdict.
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
       </main>
     </div>

@@ -15,30 +15,30 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
   const confidencePercentage = Math.round(confidence * 100);
 
   const getConfidenceColor = () => {
-    if (confidence > 0.75) return 'bg-destructive';
+    if (confidence > 0.75) return 'bg-red-500';
     if (confidence > 0.5) return 'bg-yellow-500';
     return 'bg-green-500';
   };
   
   const getVerdictIcon = () => {
       if (isDeepfake) {
-        if (confidence > 0.75) return <XCircle className="h-6 w-6 text-destructive" />;
-        return <AlertTriangle className="h-6 w-6 text-yellow-500" />;
+        if (confidence > 0.75) return <XCircle className="h-6 w-6 text-red-400" />;
+        return <AlertTriangle className="h-6 w-6 text-yellow-400" />;
       }
-      return <CheckCircle2 className="h-6 w-6 text-green-600" />;
+      return <CheckCircle2 className="h-6 w-6 text-green-400" />;
   }
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden bg-card/50 border-border/50">
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
                 <CardTitle className="font-headline text-2xl">Analysis Complete</CardTitle>
-                <CardDescription className="truncate max-w-xs md:max-w-md">{filename}</CardDescription>
+                <CardDescription className="truncate max-w-xs md:max-w-md text-muted-foreground">{filename}</CardDescription>
             </div>
-            <Badge variant={isDeepfake ? 'destructive' : 'secondary'} className="text-base px-4 py-2">
+            <Badge variant={isDeepfake ? 'destructive' : 'default'} className="text-base px-4 py-2 bg-opacity-50 border-opacity-50">
               {getVerdictIcon()}
-              <span className="ml-2">{isDeepfake ? 'Deepfake Detected' : 'Authentic'}</span>
+              <span className="ml-2">{isDeepfake ? 'Deepfake Detected' : 'Likely Authentic'}</span>
             </Badge>
         </div>
       </CardHeader>
@@ -46,7 +46,7 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
         <div className="space-y-2">
             <div className="flex justify-between items-baseline">
                 <h3 className="text-lg font-semibold">Confidence Score</h3>
-                <p className="text-2xl font-bold text-foreground">{confidencePercentage}%</p>
+                <p className={`text-2xl font-bold ${confidence > 0.75 ? 'text-red-400' : confidence > 0.5 ? 'text-yellow-400' : 'text-green-400'}`}>{confidencePercentage}%</p>
             </div>
             <Progress value={confidencePercentage} indicatorClassName={getConfidenceColor()} />
         </div>

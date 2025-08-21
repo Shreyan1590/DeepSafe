@@ -112,12 +112,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-        <header className="py-4 px-4 md:px-6 bg-card border-b sticky top-0 z-50">
+    <div className="flex flex-col min-h-screen bg-background dark">
+        <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
                 <a href="/" className="flex items-center gap-3">
-                    <ShieldCheck className="h-7 w-7 md:h-8 md:w-8 text-primary" />
-                    <h1 className="text-xl md:text-2xl font-headline font-bold text-foreground">
+                    <ShieldCheck className="h-8 w-8 text-primary" />
+                    <h1 className="text-2xl font-headline font-bold text-foreground">
                     DeepSafe
                     </h1>
                 </a>
@@ -131,7 +131,7 @@ export default function LoginPage() {
                     <TabsTrigger value="signup">Sign Up</TabsTrigger>
                 </TabsList>
                 <TabsContent value="login">
-                    <Card>
+                    <Card className="bg-card/50 border-border/50">
                     <CardHeader>
                         <CardTitle>Login</CardTitle>
                         <CardDescription>
@@ -181,7 +181,7 @@ export default function LoginPage() {
                     </Card>
                 </TabsContent>
                 <TabsContent value="signup">
-                    <Card>
+                    <Card className="bg-card/50 border-border/50">
                     <CardHeader>
                         <CardTitle>Sign Up</CardTitle>
                         <CardDescription>
