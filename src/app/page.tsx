@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ShieldCheck, ArrowRight } from 'lucide-react';
+import { ShieldCheck, ArrowRight, BookUser } from 'lucide-react';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -23,6 +23,11 @@ export default function LandingPage() {
             <h1 className="text-xl md:text-2xl font-headline font-bold text-foreground">
               DeepSafe
             </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => router.push('/login')}>
+              Login / Sign Up
+            </Button>
           </div>
         </div>
       </header>
@@ -74,13 +79,6 @@ export default function LandingPage() {
                 </section>
               </CardContent>
             </Card>
-          
-            <div className="text-center">
-                <Button size="lg" onClick={() => router.push('/login')}>
-                    Login / SignUp to Continue
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-            </div>
         </div>
       </main>
     </div>
