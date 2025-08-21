@@ -48,7 +48,8 @@ export default function DashboardPage() {
       if (storedHistory) {
         setHistory(JSON.parse(storedHistory));
       }
-    } catch (error)      console.error('Failed to load history from localStorage', error);
+    } catch (error) {
+      console.error('Failed to load history from localStorage', error);
     }
   }, [user]);
 

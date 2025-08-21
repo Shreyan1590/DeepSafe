@@ -1,6 +1,6 @@
 'use client';
 
-import type { AnalysisResult } from '@/app/page';
+import type { AnalysisResult } from '@/app/dashboard/page';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
