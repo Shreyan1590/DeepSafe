@@ -1,17 +1,15 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import type { AnalyzeDeepfakeOutput } from '@/ai/flows/analyze-deepfake';
-import { runAnalysisAction, getAnalysisHistoryAction } from '@/app/actions';
+import { runAnalysisAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import VideoUploader from '@/components/video-uploader';
 import AnalysisResultDisplay from '@/components/analysis-result-display';
 import HistorySidebar from '@/components/history-sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User as FirebaseUser } from 'firebase/auth';
-import { addAnalysisToHistory, clearAnalysisHistory } from '@/lib/firestore';
 import VideoFrameExtractor from '@/components/video-frame-extractor';
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
@@ -22,57 +20,59 @@ export type AnalysisResult = AnalyzeDeepfakeOutput & {
   frameDataUri?: string;
 };
 
-interface DashboardPageProps {
-    user: FirebaseUser;
+// Hook to use local storage for state persistence
+function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
+    const [storedValue, setStoredValue] = useState<T>(() => {
+        if (typeof window === 'undefined') {
+            return initialValue;
+        }
+        try {
+            const item = window.localStorage.getItem(key);
+            return item ? JSON.parse(item) : initialValue;
+        } catch (error) {
+            console.log(error);
+            return initialValue;
+        }
+    });
+
+    const setValue = (value: T) => {
+        try {
+            const valueToStore = value instanceof Function ? value(storedValue) : value;
+            setStoredValue(valueToStore);
+            if (typeof window !== 'undefined') {
+                window.localStorage.setItem(key, JSON.stringify(valueToStore));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    return [storedValue, setValue];
 }
 
-export default function DashboardPage({ user }: DashboardPageProps) {
-  const [history, setHistory] = useState<AnalysisResult[]>([]);
+
+export default function DashboardPage() {
+  const [history, setHistory] = useLocalStorage<AnalysisResult[]>("analysisHistory", []);
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isHistoryLoading, setIsHistoryLoading] = useState(true);
   const [fileToAnalyze, setFileToAnalyze] = useState<File | null>(null);
   const { toast } = useToast();
 
-  const fetchHistory = useCallback(async (uid: string) => {
-    setIsHistoryLoading(true);
-    try {
-      const result = await getAnalysisHistoryAction(uid);
-      if ('error' in result) {
-        throw new Error(result.error);
-      }
-      setHistory(result);
-    } catch (error) {
-      console.error('Failed to load history from action', error);
-      const errorMessage = error instanceof Error ? error.message : "Could not load analysis history.";
-      toast({
-        variant: 'destructive',
-        title: "Error",
-        description: errorMessage,
-      });
-    } finally {
-      setIsHistoryLoading(false);
-    }
-  }, [toast]);
-
   useEffect(() => {
-    if (user) {
-      fetchHistory(user.uid);
+    // Set the first item in history as the current analysis when the page loads
+    if (history.length > 0 && !currentAnalysis) {
+        setCurrentAnalysis(history[0]);
     }
-  }, [user, fetchHistory]);
-  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history]);
+
   const handleFileSelect = (file: File) => {
-    if (!user) {
-      toast({ variant: 'destructive', title: "Authentication Error", description: "You must be logged in to run an analysis." });
-      return;
-    }
     setIsLoading(true);
     setCurrentAnalysis(null);
     setFileToAnalyze(file);
   }
 
   const handleFrameExtracted = async (frameDataUri: string | null) => {
-    if (!fileToAnalyze || !user) {
+    if (!fileToAnalyze) {
         setIsLoading(false);
         return;
     };
@@ -94,24 +94,19 @@ export default function DashboardPage({ user }: DashboardPageProps) {
         if ('error' in result) {
             throw new Error(result.error);
         }
-
-        const newAnalysis: Omit<AnalysisResult, 'id' | 'timestamp'> = {
+        
+        const timestamp = new Date().toISOString();
+        const finalAnalysis: AnalysisResult = {
           ...result,
+          id: timestamp, // Use timestamp as a unique ID
           filename: fileToAnalyze.name,
           videoPreviewUrl: URL.createObjectURL(fileToAnalyze),
-          frameDataUri: frameDataUri, 
-        };
-
-        const newId = await addAnalysisToHistory(user.uid, newAnalysis);
-        
-        const finalAnalysis: AnalysisResult = {
-          ...newAnalysis,
-          id: newId,
-          timestamp: new Date().toISOString(),
+          frameDataUri: frameDataUri,
+          timestamp: timestamp,
         }
 
         setCurrentAnalysis(finalAnalysis);
-        setHistory(prev => [finalAnalysis, ...prev]);
+        setHistory([finalAnalysis, ...history]);
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
@@ -132,22 +127,12 @@ export default function DashboardPage({ user }: DashboardPageProps) {
   };
 
   const handleClearHistory = async () => {
-    if (!user) return;
-    try {
-        await clearAnalysisHistory(user.uid);
-        setHistory([]);
-        setCurrentAnalysis(null);
-        toast({
-            title: "History Cleared",
-            description: "Your analysis history has been removed.",
-        })
-    } catch(error) {
-         toast({
-            variant: 'destructive',
-            title: "Error",
-            description: "Could not clear analysis history.",
-        })
-    }
+    setHistory([]);
+    setCurrentAnalysis(null);
+    toast({
+        title: "History Cleared",
+        description: "Your analysis history has been removed.",
+    })
   };
   
   return (
@@ -167,7 +152,7 @@ export default function DashboardPage({ user }: DashboardPageProps) {
             onSelect={handleSelectHistory}
             onClear={handleClearHistory}
             currentAnalysisId={currentAnalysis?.id}
-            isLoading={isHistoryLoading}
+            isLoading={false} // No more loading from firestore
             />
         </div>
     </div>

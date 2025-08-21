@@ -5,14 +5,10 @@ import {
   Sheet,
   SheetContent,
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
 import {
-  PanelLeft,
   Settings,
-  User,
   LayoutDashboard,
 } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 import {
     Sidebar as ReusableSidebar,
     SidebarContent,
@@ -32,7 +28,6 @@ function NavContent({ activeView, setActiveView }: SidebarProps) {
     const { state } = useSidebar();
     const navItems = [
       { name: "Dashboard", view: 'dashboard', icon: LayoutDashboard },
-      { name: "Profile", view: 'profile', icon: User },
       { name: "Settings", view: 'settings', icon: Settings },
     ];
 

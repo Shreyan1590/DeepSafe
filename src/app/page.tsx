@@ -36,7 +36,7 @@ export default function LandingPage() {
                         DeepSafe is an advanced AI-powered tool that analyzes video content to identify sophisticated deepfake manipulations. Protect yourself from misinformation and verify the authenticity of your media.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Button size="lg" onClick={() => router.push('/login')}>Get Started for Free <ArrowRight className="ml-2" /></Button>
+                        <Button size="lg" onClick={() => router.push('/dashboard')}>Get Started for Free <ArrowRight className="ml-2" /></Button>
                     </div>
                 </div>
 
@@ -192,7 +192,7 @@ export default function LandingPage() {
                         Sign up today and start analyzing videos for free. Protect yourself and your audience from the threat of digital misinformation.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Button size="lg" onClick={() => router.push('/login')}>Get Started for Free <ArrowRight className="ml-2" /></Button>
+                        <Button size="lg" onClick={() => router.push('/dashboard')}>Get Started for Free <ArrowRight className="ml-2" /></Button>
                     </div>
                 </div>
             </div>
