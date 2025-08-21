@@ -42,6 +42,8 @@ import { motion } from 'framer-motion';
 import Header from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
+export const dynamic = 'force-dynamic';
+
 const AuthForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
