@@ -12,7 +12,7 @@ interface AnalysisResultDisplayProps {
 }
 
 export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayProps) {
-  const { isDeepfake, deepfakeConfidence, aiGeneratedConfidence, analysis, filename, videoPreviewUrl, videoDataUri } = result;
+  const { isDeepfake, deepfakeConfidence, aiGeneratedConfidence, analysis, filename, videoPreviewUrl, frameDataUri } = result;
   
   const overallConfidence = Math.max(deepfakeConfidence, aiGeneratedConfidence);
 
@@ -30,7 +30,7 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
       return <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />;
   }
   
-  const videoSrc = videoPreviewUrl || videoDataUri;
+  const videoSrc = videoPreviewUrl;
 
   return (
     <Card className="overflow-hidden bg-card/50 border-border/50">

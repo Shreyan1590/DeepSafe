@@ -20,7 +20,7 @@ import type { AnalysisResult } from '@/app/dashboard/page';
 // Firestore data converter
 const analysisResultConverter = {
   toFirestore: (data: Omit<AnalysisResult, 'id'| 'timestamp'>) => {
-    // Don't store the blob preview URL, just the data URI
+    // Don't store the blob preview URL
     const { videoPreviewUrl, ...rest } = data;
     return {
       ...rest,
@@ -30,9 +30,11 @@ const analysisResultConverter = {
   fromFirestore: (snapshot: any, options: any): AnalysisResult => {
     const data = snapshot.data(options);
     const timestamp = data.timestamp as Timestamp;
-    // Create a client-side preview URL from the stored data URI
-    const blob = data.videoDataUri ? dataURItoBlob(data.videoDataUri) : null;
-    const videoPreviewUrl = blob ? URL.createObjectURL(blob) : '';
+    
+    // The videoPreviewUrl needs to be regenerated on the client from the frameDataUri if needed,
+    // but for history display, we may not need a full video object URL anymore.
+    // For simplicity, we'll return an empty string, as the primary display shows the frame.
+    // If we were to re-create a blob, it would be from the frameDataUri (image) not a video.
     
     return {
       id: snapshot.id,
@@ -42,13 +44,13 @@ const analysisResultConverter = {
       analysis: data.analysis,
       filename: data.filename,
       timestamp: timestamp.toDate().toISOString(),
-      videoPreviewUrl: videoPreviewUrl,
-      videoDataUri: data.videoDataUri,
+      videoPreviewUrl: '', // This is now less relevant, as we work with frames.
+      frameDataUri: data.frameDataUri,
     };
   },
 };
 
-// Helper to convert data URI to Blob
+// Helper to convert data URI to Blob -- no longer needed for video, but can be kept for general utility
 function dataURItoBlob(dataURI: string) {
     if (!dataURI || !dataURI.includes(',')) return null;
     const byteString = atob(dataURI.split(',')[1]);
@@ -67,7 +69,14 @@ export const getAnalysisHistory = async (userId: string): Promise<AnalysisResult
   const historyCollection = collection(db, `users/${userId}/analyses`).withConverter(analysisResultConverter);
   const q = query(historyCollection, orderBy('timestamp', 'desc'), limit(50));
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => doc.data());
+  return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      // Recreate a client-side URL for the video preview if needed
+      // Since we only have the frame, we can use that for preview.
+      const blob = data.frameDataUri ? dataURItoBlob(data.frameDataUri) : null;
+      const previewUrl = blob ? URL.createObjectURL(blob) : '';
+      return {...data, videoPreviewUrl: previewUrl };
+  });
 };
 
 // Function to add a new analysis result to a user's history

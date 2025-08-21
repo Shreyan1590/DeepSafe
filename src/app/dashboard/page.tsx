@@ -12,13 +12,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { User as FirebaseUser } from 'firebase/auth';
 import { addAnalysisToHistory, getAnalysisHistory, clearAnalysisHistory } from '@/lib/firestore';
+import VideoFrameExtractor from '@/components/video-frame-extractor';
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
   id: string;
   filename: string;
   timestamp: string;
   videoPreviewUrl: string;
-  videoDataUri?: string; 
+  frameDataUri?: string;
 };
 
 interface DashboardPageProps {
@@ -30,6 +31,7 @@ export default function DashboardPage({ user }: DashboardPageProps) {
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
+  const [fileToAnalyze, setFileToAnalyze] = useState<File | null>(null);
   const { toast } = useToast();
 
   const fetchHistory = useCallback(async (uid: string) => {
@@ -54,22 +56,36 @@ export default function DashboardPage({ user }: DashboardPageProps) {
       fetchHistory(user.uid);
     }
   }, [user, fetchHistory]);
-
-  const handleAnalysis = async (file: File) => {
+  
+  const handleFileSelect = (file: File) => {
     if (!user) {
       toast({ variant: 'destructive', title: "Authentication Error", description: "You must be logged in to run an analysis." });
       return;
     }
     setIsLoading(true);
     setCurrentAnalysis(null);
+    setFileToAnalyze(file);
+  }
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      const videoDataUri = reader.result as string;
+  const handleFrameExtracted = async (frameDataUri: string | null) => {
+    if (!fileToAnalyze || !user) {
+        setIsLoading(false);
+        return;
+    };
+    
+    if (!frameDataUri) {
+        toast({
+            variant: 'destructive',
+            title: "Analysis Failed",
+            description: "Could not extract a frame from the video. The file may be corrupt or in an unsupported format.",
+        });
+        setIsLoading(false);
+        setFileToAnalyze(null);
+        return;
+    }
 
-      try {
-        const result = await runAnalysisAction(videoDataUri);
+    try {
+        const result = await runAnalysisAction(frameDataUri);
         
         if ('error' in result) {
             throw new Error(result.error);
@@ -77,9 +93,9 @@ export default function DashboardPage({ user }: DashboardPageProps) {
 
         const newAnalysis: Omit<AnalysisResult, 'id' | 'timestamp'> = {
           ...result,
-          filename: file.name,
-          videoPreviewUrl: URL.createObjectURL(file),
-          videoDataUri: videoDataUri, 
+          filename: fileToAnalyze.name,
+          videoPreviewUrl: URL.createObjectURL(fileToAnalyze),
+          frameDataUri: frameDataUri, 
         };
 
         const newId = await addAnalysisToHistory(user.uid, newAnalysis);
@@ -102,17 +118,10 @@ export default function DashboardPage({ user }: DashboardPageProps) {
         });
       } finally {
         setIsLoading(false);
+        setFileToAnalyze(null);
       }
-    };
-    reader.onerror = () => {
-        toast({
-            variant: 'destructive',
-            title: "File Read Error",
-            description: "Could not read the selected file.",
-        });
-        setIsLoading(false);
-    };
-  };
+  }
+
 
   const handleSelectHistory = (result: AnalysisResult) => {
     setCurrentAnalysis(result);
@@ -138,9 +147,13 @@ export default function DashboardPage({ user }: DashboardPageProps) {
   };
   
   return (
+    <>
+    {fileToAnalyze && (
+      <VideoFrameExtractor videoFile={fileToAnalyze} onFrameExtracted={handleFrameExtracted} />
+    )}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-8">
-            <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
+            <VideoUploader onAnalyze={handleFileSelect} isLoading={isLoading} />
             {isLoading && <LoadingSkeleton />}
             {currentAnalysis && <AnalysisResultDisplay result={currentAnalysis} />}
         </div>
@@ -154,6 +167,7 @@ export default function DashboardPage({ user }: DashboardPageProps) {
             />
         </div>
     </div>
+    </>
   );
 }
 
