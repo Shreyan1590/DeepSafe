@@ -5,18 +5,23 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+# Pass secrets from Cloud Secret Manager to your app as environment variables.
 secretEnv:
   - secret: GEMINI_API_KEY
     env: GEMINI_API_KEY
-  - secret: NEXT_PUBLIC_FIREBASE_API_KEY
-    env: NEXT_PUBLIC_FIREBASE_API_KEY
-  - secret: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    env: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-  - secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    env: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-  - secret: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    env: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-  - secret: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    env: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-  - secret: NEXT_PUBLIC_FIREBASE_APP_ID
-    env: NEXT_PUBLIC_FIREBASE_APP_ID
+  - secret: FIREBASE_API_KEY # Note: This is your private server key if needed, not the public one.
+    env: FIREBASE_API_KEY 
+# Publicly available environment variables for your app.
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyDUyxrtUDrIdWD0WeZAHCf3ye_rS7RxZLY"
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "deepsafe-hack.firebaseapp.com"
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "deepsafe-hack"
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "deepsafe-hack.appspot.com"
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "200519422683"
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:200519422683:web:260440dabe47328ca4b2fe"
