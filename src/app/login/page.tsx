@@ -321,10 +321,14 @@ export default function LoginPage() {
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsCheckingAuth(false);
+      if (user) {
+        router.push('/dashboard');
+      } else {
+        setIsCheckingAuth(false);
+      }
     });
     return () => unsubscribe();
-  }, [auth]);
+  }, [auth, router]);
 
   return (
     <SidebarProvider>
