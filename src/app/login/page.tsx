@@ -26,6 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShieldCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 const AuthForm = () => {
     const [email, setEmail] = useState('');
@@ -241,12 +242,12 @@ export default function LoginPage() {
     <div className="relative flex flex-col min-h-screen bg-background dark w-full h-full">
         <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
-                <a href="/" className="flex items-center gap-2 sm:gap-3">
+                <Link href="/" className="flex items-center gap-2 sm:gap-3">
                     <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
                     <h1 className="text-xl sm:text-2xl font-headline font-bold text-foreground">
                     DeepSafe
                     </h1>
-                </a>
+                </Link>
             </div>
         </header>
 
