@@ -67,42 +67,37 @@ const AuthForm = () => {
         router.push('/dashboard');
     }
 
-    const handleAuthError = useCallback((err: any, context: 'login' | 'signup') => {
-        let message = "An unknown error occurred.";
+    const handleAuthError = useCallback((err: any, context: 'login' | 'signup' | 'google') => {
+        let message = "An unknown error occurred. Please try again.";
+
         if (err.code) {
             switch (err.code) {
-                case "auth/wrong-password":
-                case "auth/invalid-credential":
-                     if (context === 'login') {
-                        message = "No user found with this email. Please sign up first.";
-                        setActiveTab('signup');
-                     } else {
-                        message = "Incorrect email or password. Please try again.";
-                     }
+                case 'auth/invalid-credential':
+                case 'auth/wrong-password':
+                    message = 'Incorrect email or password. Please try again.';
                     break;
-                case "auth/user-not-found":
-                    message = "No user found with this email. Please sign up first.";
+                case 'auth/user-not-found':
+                    message = 'No user found with this email. Please sign up first.';
                     setActiveTab('signup');
                     break;
-                case "auth/email-already-in-use":
-                    message = "This email is already registered. Please log in.";
+                case 'auth/email-already-in-use':
+                    message = 'This email is already registered. Please log in.';
                     setActiveTab('login');
                     break;
-                case "auth/popup-closed-by-user":
-                    message = "Sign-in popup closed. Please try again.";
+                case 'auth/popup-closed-by-user':
+                    message = 'Sign-in popup was closed before completing. Please try again.';
                     break;
-                case "auth/cancelled-popup-request":
+                case 'auth/cancelled-popup-request':
+                    // This can be ignored as it's not a user-facing error.
                     return;
-                case "auth/auth-domain-config-required":
-                case "auth/unauthorized-domain":
-                     message = "This domain is not authorized for authentication.";
-                     break;
+                case 'auth/unauthorized-domain':
+                    message = 'This domain is not authorized for authentication. Please contact support.';
+                    break;
                 default:
-                    message = err.message;
+                    message = `An unexpected error occurred: ${err.message}`;
             }
-        } else {
-          message = err.message;
         }
+        
         setError(message);
         toast({
             variant: "destructive",
@@ -110,6 +105,7 @@ const AuthForm = () => {
             description: message,
         });
     }, [toast]);
+
 
     useEffect(() => {
         const processRedirectResult = async () => {
@@ -120,7 +116,7 @@ const AuthForm = () => {
                     handleAuthSuccess(result.user);
                 }
             } catch (err: any) {
-                handleAuthError(err, 'login');
+                handleAuthError(err, 'google');
             } finally {
                 setIsProcessing(false);
             }
@@ -131,8 +127,15 @@ const AuthForm = () => {
 
     const handleEmailPasswordSignUp = async () => {
         setError(null);
+        setIsProcessing(true);
+        if (!email || !password) {
+            setError("Please enter a valid email and password.");
+            setIsProcessing(false);
+            return;
+        }
         if (password.length < 6) {
             setError("Password must be at least 6 characters long.");
+            setIsProcessing(false);
             return;
         }
         try {
@@ -140,21 +143,32 @@ const AuthForm = () => {
             handleAuthSuccess(userCredential.user);
         } catch (err: any) {
             handleAuthError(err, 'signup');
+        } finally {
+            setIsProcessing(false);
         }
     };
 
     const handleEmailPasswordLogin = async () => {
         setError(null);
+        setIsProcessing(true);
+        if (!email || !password) {
+            setError("Please enter a valid email and password.");
+            setIsProcessing(false);
+            return;
+        }
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             handleAuthSuccess(userCredential.user);
         } catch (err: any) {
             handleAuthError(err, 'login');
+        } finally {
+            setIsProcessing(false);
         }
     };
 
     const handleGoogleSignIn = async () => {
         setError(null);
+        setIsProcessing(true);
         const provider = new GoogleAuthProvider();
         try {
             if (isMobile) {
@@ -164,7 +178,9 @@ const AuthForm = () => {
                 handleAuthSuccess(userCredential.user);
             }
         } catch (err: any) {
-            handleAuthError(err, 'login');
+            handleAuthError(err, 'google');
+        } finally {
+            setIsProcessing(false);
         }
     };
     
@@ -172,7 +188,7 @@ const AuthForm = () => {
         return (
             <div className="flex flex-col items-center justify-center gap-4 p-8">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-muted-foreground">Signing in...</p>
+                <p className="text-muted-foreground">Please wait...</p>
             </div>
         )
     }
@@ -228,8 +244,8 @@ const AuthForm = () => {
                         />
                         </div>
                         {error && <p className="text-destructive text-sm">{error}</p>}
-                        <Button onClick={handleEmailPasswordLogin} className="w-full">
-                        Login with Email
+                        <Button onClick={handleEmailPasswordLogin} className="w-full" disabled={isProcessing}>
+                            {isProcessing ? <Loader2 className="animate-spin" /> : "Login with Email"}
                         </Button>
                         <div className="relative my-4">
                             <div className="absolute inset-0 flex items-center">
@@ -241,8 +257,8 @@ const AuthForm = () => {
                                 </span>
                             </div>
                         </div>
-                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-                        Sign In with Google
+                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full" disabled={isProcessing}>
+                            {isProcessing ? <Loader2 className="animate-spin" /> : "Sign In with Google"}
                         </Button>
                     </CardContent>
                     </Card>
@@ -278,8 +294,8 @@ const AuthForm = () => {
                         />
                         </div>
                         {error && <p className="text-destructive text-sm">{error}</p>}
-                        <Button onClick={handleEmailPasswordSignUp} className="w-full">
-                        Sign Up with Email
+                        <Button onClick={handleEmailPasswordSignUp} className="w-full" disabled={isProcessing}>
+                            {isProcessing ? <Loader2 className="animate-spin" /> : "Sign Up with Email"}
                         </Button>
                         <div className="relative my-4">
                             <div className="absolute inset-0 flex items-center">
@@ -291,8 +307,8 @@ const AuthForm = () => {
                                 </span>
                             </div>
                         </div>
-                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-                        Sign Up with Google
+                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full" disabled={isProcessing}>
+                            {isProcessing ? <Loader2 className="animate-spin" /> : "Sign Up with Google"}
                         </Button>
                     </CardContent>
                     </Card>
@@ -308,7 +324,7 @@ const AuthForm = () => {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button onClick={handleContinueToDashboard} className="w-full">Continue</Button>
+                    <Button onClick={handleContinueToDashboard} className="w-full">Continue to Dashboard</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -356,3 +372,5 @@ export default function LoginPage() {
     </SidebarProvider>
   );
 }
+
+    
