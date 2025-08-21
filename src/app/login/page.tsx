@@ -330,18 +330,24 @@ export default function LoginPage() {
     return () => unsubscribe();
   }, [auth, router]);
 
+  if (isCheckingAuth) {
+      return (
+          <div className="flex items-center justify-center min-h-screen bg-background dark">
+              <div className="flex flex-col items-center justify-center gap-4 p-8">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                  <p className="text-muted-foreground">Loading...</p>
+              </div>
+          </div>
+      );
+  }
+
   return (
     <SidebarProvider>
         <div className="relative flex flex-col min-h-screen bg-background w-full h-full">
             <Header />
             <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center gap-6">
                 <Suspense fallback={<div>Loading...</div>}>
-                    {isCheckingAuth ? 
-                        <div className="flex flex-col items-center justify-center gap-4 p-8">
-                            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                            <p className="text-muted-foreground">Loading...</p>
-                        </div> : <AuthForm />
-                    }
+                    <AuthForm />
                 </Suspense>
                 <Button variant="outline" asChild>
                     <Link href="/">
