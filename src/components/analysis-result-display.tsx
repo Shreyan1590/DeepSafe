@@ -62,7 +62,7 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
                   <p className={`text-xl sm:text-2xl font-bold ${aiGeneratedConfidence > 0.75 ? 'text-red-400' : aiGeneratedConfidence > 0.5 ? 'text-yellow-400' : 'text-green-400'}`}>{Math.round(aiGeneratedConfidence * 100)}%</p>
               </div>
               <Progress value={Math.round(aiGeneratedConfidence * 100)} indicatorClassName={getConfidenceColor(aiGeneratedConfidence)} />
-              <p className="text-xs text-muted-foreground leading-relaxed pt-2">{analysis}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed pt-2">{analysis}</p>
           </div>
         </div>
         
