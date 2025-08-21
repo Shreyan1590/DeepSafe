@@ -2,8 +2,7 @@
 'use client';
 
 import Header from '@/components/header';
-import { Sidebar, SidebarProvider, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { LayoutDashboard, Settings, User } from 'lucide-react';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import type { ReactNode } from 'react';
 
 export default function DashboardLayout({
@@ -17,7 +16,7 @@ export default function DashboardLayout({
       <div className="flex min-h-screen w-full flex-col bg-background dark">
         <div className="flex flex-col flex-1">
           <Header>
-             <SidebarTrigger className="sm:hidden" />
+             <SidebarTrigger />
           </Header>
           <div className="flex flex-1">
              {children}
