@@ -1,68 +1,18 @@
 
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, ArrowRight } from 'lucide-react';
 
 export default function LandingPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
-  const handleAuthSuccess = () => {
-    router.push('/dashboard');
-  };
-
-  const handleEmailPasswordSignUp = async () => {
-    setError(null);
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      handleAuthSuccess();
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  const handleEmailPasswordLogin = async () => {
-    setError(null);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      handleAuthSuccess();
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setError(null);
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      handleAuthSuccess();
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -77,12 +27,11 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto p-4 md:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
+      <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center">
+        <div className="w-full max-w-4xl space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline text-3xl">About DeepSafe</CardTitle>
+                <CardTitle className="font-headline text-3xl text-center">About DeepSafe</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 text-lg text-muted-foreground leading-relaxed">
                  <section>
@@ -125,116 +74,13 @@ export default function LandingPage() {
                 </section>
               </CardContent>
             </Card>
-          </div>
           
-          <div className="flex justify-center">
-            <Tabs defaultValue="login" className="w-full max-w-md">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="login">Login</TabsTrigger>
-                    <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                </TabsList>
-                <TabsContent value="login">
-                    <Card>
-                    <CardHeader>
-                        <CardTitle>Login</CardTitle>
-                        <CardDescription>
-                        Access your account to continue.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                        <Label htmlFor="login-email">Email</Label>
-                        <Input
-                            id="login-email"
-                            type="email"
-                            placeholder="m@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                        </div>
-                        <div className="space-y-2">
-                        <Label htmlFor="login-password">Password</Label>
-                        <Input
-                            id="login-password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                        </div>
-                        {error && <p className="text-destructive text-sm">{error}</p>}
-                        <Button onClick={handleEmailPasswordLogin} className="w-full">
-                        Login with Email
-                        </Button>
-                        <div className="relative my-4">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-card px-2 text-muted-foreground">
-                                Or continue with
-                                </span>
-                            </div>
-                        </div>
-                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-                        Sign In with Google
-                        </Button>
-                    </CardContent>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="signup">
-                    <Card>
-                    <CardHeader>
-                        <CardTitle>Sign Up</CardTitle>
-                        <CardDescription>
-                        Create an account to get started.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                        <Label htmlFor="signup-email">Email</Label>
-                        <Input
-                            id="signup-email"
-                            type="email"
-                            placeholder="m@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                        </div>
-                        <div className="space-y-2">
-                        <Label htmlFor="signup-password">Password</Label>
-                        <Input
-                            id="signup-password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                        </div>
-                        {error && <p className="text-destructive text-sm">{error}</p>}
-                        <Button onClick={handleEmailPasswordSignUp} className="w-full">
-                        Sign Up with Email
-                        </Button>
-                        <div className="relative my-4">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-card px-2 text-muted-foreground">
-                                Or continue with
-                                </span>
-                            </div>
-                        </div>
-                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-                        Sign Up with Google
-                        </Button>
-                    </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-          </div>
+            <div className="text-center">
+                <Button size="lg" onClick={() => router.push('/login')}>
+                    Login / SignUp to Continue
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+            </div>
         </div>
       </main>
     </div>
