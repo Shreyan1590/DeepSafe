@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -17,13 +18,6 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-  },
-   webpack: (config, { isServer }) => {
-    // Exclude three.js from server-side rendering
-    if (isServer) {
-      config.externals.push('three', '@react-three/drei', '@react-three/fiber');
-    }
-    return config;
   },
 };
 

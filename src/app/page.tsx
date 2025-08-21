@@ -13,16 +13,11 @@ import {
 import { ShieldCheck, ArrowRight, GaugeCircle, ScanEye, ShieldAlert } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
-const Background3D = dynamic(() => import('@/components/3d-background'), { ssr: false });
-
 export default function LandingPage() {
   const router = useRouter();
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background dark w-full h-full">
-      <Suspense fallback={<div>Loading...</div>}>
-        <Background3D />
-      </Suspense>
       <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
