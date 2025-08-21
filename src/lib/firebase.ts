@@ -1,8 +1,6 @@
+
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 
 // Your web app's Firebase configuration is now read from environment variables
 const firebaseConfig = {
@@ -16,20 +14,6 @@ const firebaseConfig = {
 
 // Initialize Firebase for SSR and client-side
 // This function ensures that we don't try to initialize the app more than once.
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Initialize Analytics only on the client side
-if (typeof window !== 'undefined') {
-    // Check if the configuration keys are provided before initializing analytics
-    if (firebaseConfig.apiKey && firebaseConfig.measurementId) {
-        try {
-            getAnalytics(app);
-        } catch (e) {
-            console.error("Failed to initialize Firebase Analytics", e)
-        }
-    }
-}
-
-export { app, auth, db };
+export { app, firebaseConfig };

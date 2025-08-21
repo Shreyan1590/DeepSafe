@@ -1,5 +1,6 @@
 
-import { db } from './firebase';
+import { getFirestore } from 'firebase/firestore';
+import { app } from './firebase';
 import {
   collection,
   addDoc,
@@ -14,6 +15,8 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import type { AnalysisResult } from '@/app/dashboard/page';
+
+const db = getFirestore(app);
 
 // Firestore data converter
 const analysisResultConverter = {

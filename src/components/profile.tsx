@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirestore } from 'firebase/firestore';
+import { app } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ export default function Profile({ user }: ProfileProps) {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
+      const db = getFirestore(app);
       const docRef = doc(db, 'users', user.uid);
       const docSnap = await getDoc(docRef);
 
@@ -53,6 +55,7 @@ export default function Profile({ user }: ProfileProps) {
 
   const handleSave = async () => {
     if (!user) return;
+    const db = getFirestore(app);
     const docRef = doc(db, 'users', user.uid);
     try {
       await setDoc(docRef, profile, { merge: true });

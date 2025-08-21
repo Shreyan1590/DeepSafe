@@ -3,7 +3,8 @@
 
 import { ShieldCheck, LogOut, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
-import { auth } from '@/lib/firebase';
+import { getAuth } from 'firebase/auth';
+import { app } from '@/lib/firebase';
 import { useRouter, usePathname } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -21,6 +22,7 @@ export default function Header({
   const user = useAuth();
   
   const handleSignOut = async () => {
+    const auth = getAuth(app);
     try {
       await auth.signOut();
       router.push('/login');
