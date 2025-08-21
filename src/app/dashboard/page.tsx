@@ -12,10 +12,13 @@ import HistorySidebar from '@/components/history-sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import Profile from '@/components/profile'; 
 import Settings from '@/components/settings';
 import { addAnalysisToHistory, getAnalysisHistory, clearAnalysisHistory } from '@/lib/firestore';
+import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { LayoutDashboard, Settings as SettingsIcon, User as UserIcon } from 'lucide-react';
+
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
   id: string;
@@ -25,12 +28,19 @@ export type AnalysisResult = AnalyzeDeepfakeOutput & {
   videoDataUri?: string; 
 };
 
-export default function DashboardPage({ activeView }: { activeView: string }) {
-  const [user, setUser] = useState<User | null>(null);
+const navItems = [
+  { name: 'Dashboard', view: 'dashboard', icon: LayoutDashboard },
+  { name: 'Profile', view: 'profile', icon: UserIcon },
+  { name: 'Settings', view: 'settings', icon: SettingsIcon },
+];
+
+export default function DashboardPage() {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
+  const [activeView, setActiveView] = useState('dashboard');
   const { toast } = useToast();
   const router = useRouter();
 
@@ -187,7 +197,31 @@ export default function DashboardPage({ activeView }: { activeView: string }) {
     );
   }
 
-  return renderContent();
+  return (
+    <>
+      <Sidebar>
+          <SidebarContent>
+              <SidebarMenu>
+                  {navItems.map((item) => (
+                      <SidebarMenuItem key={item.name}>
+                          <SidebarMenuButton
+                              onClick={() => setActiveView(item.view)}
+                              isActive={activeView === item.view}
+                              tooltip={item.name}
+                          >
+                              <item.icon />
+                              <span className="group-data-[state=expanded]:inline group-data-[state=collapsed]:hidden">{item.name}</span>
+                          </SidebarMenuButton>
+                      </SidebarMenuItem>
+                  ))}
+              </SidebarMenu>
+          </SidebarContent>
+      </Sidebar>
+      <main className="flex-1 p-4 sm:p-6 md:p-8">
+        {renderContent()}
+      </main>
+    </>
+  );
 }
 
 function LoadingSkeleton() {
