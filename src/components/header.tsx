@@ -7,6 +7,7 @@ import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
+import { SidebarTrigger } from './ui/sidebar';
 
 export default function Header({
     children,
@@ -38,7 +39,7 @@ export default function Header({
     <header className="py-4 px-4 md:px-6 bg-card border-b sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-            {children}
+            <SidebarTrigger />
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/')}>
                 <ShieldCheck className="h-8 w-8 text-primary" />
                 <h1 className="text-2xl font-headline font-bold text-foreground hidden sm:block">

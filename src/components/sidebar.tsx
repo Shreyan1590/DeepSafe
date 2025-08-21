@@ -4,7 +4,6 @@
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,17 +13,13 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
 import {
     Sidebar as ReusableSidebar,
-    SidebarProvider,
-    SidebarTrigger as ReusableSidebarTrigger,
-    SidebarHeader,
     SidebarContent,
-    SidebarFooter,
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
+    useSidebar,
 } from '@/components/ui/sidebar'
 
 
@@ -40,61 +35,45 @@ const navItems = [
 ];
 
 function NavContent({ activeView, setActiveView }: SidebarProps) {
-  return (
-    <div className="flex flex-col gap-4 p-4">
-      {navItems.map((item) => (
-        <Button
-          key={item.name}
-          variant={activeView === item.view ? 'secondary' : 'ghost'}
-          onClick={() => setActiveView(item.view)}
-          className="justify-start"
-        >
-          <item.icon className="mr-2 h-4 w-4" />
-          {item.name}
-        </Button>
-      ))}
-    </div>
+    const { state } = useSidebar();
+    return (
+        <SidebarMenu>
+            {navItems.map((item) => (
+                <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton
+                        onClick={() => setActiveView(item.view)}
+                        isActive={activeView === item.view}
+                        tooltip={item.name}
+                    >
+                        <item.icon />
+                        <span className="group-data-[state=expanded]:inline group-data-[state=collapsed]:hidden">{item.name}</span>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
+        </SidebarMenu>
   );
 }
 
 export default function Sidebar({ activeView, setActiveView }: SidebarProps) {
-  const isMobile = useIsMobile();
+  const { isMobile, openMobile, setOpenMobile } = useSidebar();
 
   if (isMobile) {
     return (
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button size="icon" variant="outline" className="sm:hidden fixed top-4 left-4 z-50">
-            <PanelLeft className="h-5 w-5" />
-            <span className="sr-only">Toggle Menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="sm:max-w-xs">
-          <NavContent activeView={activeView} setActiveView={setActiveView} />
+      <Sheet open={openMobile} onOpenChange={setOpenMobile}>
+        <SheetContent side="left" className="sm:max-w-xs p-0">
+            <SidebarContent>
+                <NavContent activeView={activeView} setActiveView={setActiveView} />
+            </SidebarContent>
         </SheetContent>
       </Sheet>
     );
   }
 
   return (
-     <SidebarProvider>
-        <ReusableSidebar>
-            <SidebarContent>
-                <SidebarMenu>
-                    {navItems.map((item) => (
-                        <SidebarMenuItem key={item.name}>
-                            <SidebarMenuButton
-                                onClick={() => setActiveView(item.view)}
-                                isActive={activeView === item.view}
-                            >
-                                <item.icon />
-                                {item.name}
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
-            </SidebarContent>
-        </ReusableSidebar>
-    </SidebarProvider>
+    <ReusableSidebar>
+        <SidebarContent>
+            <NavContent activeView={activeView} setActiveView={setActiveView} />
+        </SidebarContent>
+    </ReusableSidebar>
   );
 }

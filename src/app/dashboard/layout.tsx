@@ -2,7 +2,7 @@
 'use client';
 
 import Header from '@/components/header';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import type { ReactNode } from 'react';
 
 export default function DashboardLayout({
@@ -15,9 +15,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col bg-background dark">
         <div className="flex flex-col flex-1">
-          <Header>
-             <SidebarTrigger />
-          </Header>
+          <Header />
           <div className="flex flex-1">
              {children}
           </div>

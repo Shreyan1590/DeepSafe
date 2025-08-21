@@ -16,7 +16,7 @@ import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import Profile from '@/components/profile'; 
 import Settings from '@/components/settings';
 import { addAnalysisToHistory, getAnalysisHistory, clearAnalysisHistory } from '@/lib/firestore';
-import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import Sidebar from '@/components/sidebar';
 import { LayoutDashboard, Settings as SettingsIcon, User as UserIcon } from 'lucide-react';
 
 
@@ -27,12 +27,6 @@ export type AnalysisResult = AnalyzeDeepfakeOutput & {
   videoPreviewUrl: string;
   videoDataUri?: string; 
 };
-
-const navItems = [
-  { name: 'Dashboard', view: 'dashboard', icon: LayoutDashboard },
-  { name: 'Profile', view: 'profile', icon: UserIcon },
-  { name: 'Settings', view: 'settings', icon: SettingsIcon },
-];
 
 export default function DashboardPage() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
@@ -199,24 +193,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Sidebar>
-          <SidebarContent>
-              <SidebarMenu>
-                  {navItems.map((item) => (
-                      <SidebarMenuItem key={item.name}>
-                          <SidebarMenuButton
-                              onClick={() => setActiveView(item.view)}
-                              isActive={activeView === item.view}
-                              tooltip={item.name}
-                          >
-                              <item.icon />
-                              <span className="group-data-[state=expanded]:inline group-data-[state=collapsed]:hidden">{item.name}</span>
-                          </SidebarMenuButton>
-                      </SidebarMenuItem>
-                  ))}
-              </SidebarMenu>
-          </SidebarContent>
-      </Sidebar>
+      <Sidebar activeView={activeView} setActiveView={setActiveView} />
       <main className="flex-1 p-4 sm:p-6 md:p-8">
         {renderContent()}
       </main>
