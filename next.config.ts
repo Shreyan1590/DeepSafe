@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+   webpack: (config, { isServer }) => {
+    // Exclude three.js from server-side rendering
+    if (isServer) {
+      config.externals.push('three', '@react-three/drei', '@react-three/fiber');
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
