@@ -8,9 +8,12 @@ import AppProviders from './providers';
 
 =======
 import { Toaster } from "@/components/ui/toaster"
+<<<<<<< HEAD
 import { useEffect } from 'react';
 import { themes } from '@/lib/themes';
 >>>>>>> 4d568ef (Create a sidebar for the application and in that, make as some sections)
+=======
+>>>>>>> c20f9f2 (Console Error)
 
 const metadata: Metadata = {
   title: 'DeepSafe',
@@ -22,20 +25,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', storedTheme);
-    const theme = themes.find(t => t.name === storedTheme);
-    if (theme) {
-        const root = window.document.documentElement;
-        root.classList.remove('light', 'dark'); // Remove any existing theme class
-        root.classList.add(storedTheme);
-        Object.entries(theme.cssVars).forEach(([key, value]) => {
-            root.style.setProperty(key, value);
-        });
-    }
-  }, []);
 
   return (
     <html lang="en" suppressHydrationWarning>
