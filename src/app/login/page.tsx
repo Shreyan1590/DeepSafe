@@ -23,6 +23,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -36,6 +44,8 @@ const AuthForm = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [showWelcome, setShowWelcome] = useState(false);
+    const [welcomeUser, setWelcomeUser] = useState<User | null>(null);
     const router = useRouter();
     const { toast } = useToast();
     const auth = getAuth(app);
@@ -43,12 +53,14 @@ const AuthForm = () => {
     const [activeTab, setActiveTab] = useState('login');
 
     const handleAuthSuccess = useCallback((user: User) => {
+        setWelcomeUser(user);
+        setShowWelcome(true);
+    }, []);
+    
+    const handleContinueToDashboard = () => {
+        setShowWelcome(false);
         router.push('/dashboard');
-        toast({
-            title: 'Success!',
-            description: `Welcome ${user.email}!`,
-        });
-    }, [router, toast]);
+    }
 
     const handleAuthError = useCallback((err: any, context: 'login' | 'signup') => {
         let message = "An unknown error occurred.";
@@ -160,6 +172,7 @@ const AuthForm = () => {
     }
 
     return (
+        <>
          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
@@ -266,6 +279,20 @@ const AuthForm = () => {
                 </Card>
             </TabsContent>
         </Tabs>
+        <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle className="text-center text-2xl">Welcome!</DialogTitle>
+                    <DialogDescription className="text-center text-lg">
+                        {welcomeUser?.email}
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button onClick={handleContinueToDashboard} className="w-full">Continue</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+       </>
     )
 }
 
@@ -276,7 +303,8 @@ export default function LoginPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.push('/dashboard');
+        // Don't auto-redirect, let the form handle the success state
+        // router.push('/dashboard');
       }
     });
     return () => unsubscribe();
@@ -306,3 +334,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
