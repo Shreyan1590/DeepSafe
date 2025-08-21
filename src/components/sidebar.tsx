@@ -15,6 +15,17 @@ import {
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import {
+    Sidebar as ReusableSidebar,
+    SidebarProvider,
+    SidebarTrigger as ReusableSidebarTrigger,
+    SidebarHeader,
+    SidebarContent,
+    SidebarFooter,
+    SidebarMenu,
+    SidebarMenuItem,
+    SidebarMenuButton,
+} from '@/components/ui/sidebar'
 
 
 interface SidebarProps {
@@ -53,7 +64,7 @@ export default function Sidebar({ activeView, setActiveView }: SidebarProps) {
     return (
       <Sheet>
         <SheetTrigger asChild>
-          <Button size="icon" variant="outline" className="sm:hidden">
+          <Button size="icon" variant="outline" className="sm:hidden fixed top-4 left-4 z-50">
             <PanelLeft className="h-5 w-5" />
             <span className="sr-only">Toggle Menu</span>
           </Button>
@@ -66,8 +77,24 @@ export default function Sidebar({ activeView, setActiveView }: SidebarProps) {
   }
 
   return (
-    <aside className={cn("hidden sm:block w-64 bg-card border-r")}>
-       <NavContent activeView={activeView} setActiveView={setActiveView} />
-    </aside>
+     <SidebarProvider>
+        <ReusableSidebar>
+            <SidebarContent>
+                <SidebarMenu>
+                    {navItems.map((item) => (
+                        <SidebarMenuItem key={item.name}>
+                            <SidebarMenuButton
+                                onClick={() => setActiveView(item.view)}
+                                isActive={activeView === item.view}
+                            >
+                                <item.icon />
+                                {item.name}
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
+                </SidebarMenu>
+            </SidebarContent>
+        </ReusableSidebar>
+    </SidebarProvider>
   );
 }

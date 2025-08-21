@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import type { AnalyzeDeepfakeOutput } from '@/ai/flows/analyze-deepfake';
 import { runAnalysisAction } from '@/app/actions';
@@ -15,12 +15,14 @@ import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import Profile from '@/components/profile'; 
 import Settings from '@/components/settings';
+import { addAnalysisToHistory, getAnalysisHistory, clearAnalysisHistory } from '@/lib/firestore';
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
   id: string;
   filename: string;
   timestamp: string;
   videoPreviewUrl: string;
+  videoDataUri?: string; 
 };
 
 export default function DashboardPage({ activeView }: { activeView: string }) {
@@ -28,6 +30,7 @@ export default function DashboardPage({ activeView }: { activeView: string }) {
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -42,29 +45,34 @@ export default function DashboardPage({ activeView }: { activeView: string }) {
     return () => unsubscribe();
   }, [router]);
   
-  useEffect(() => {
-    if (!user) return;
+  const fetchHistory = useCallback(async (uid: string) => {
+    setIsHistoryLoading(true);
     try {
-      const storedHistory = localStorage.getItem(`deepsafed-history-${user.uid}`);
-      if (storedHistory) {
-        setHistory(JSON.parse(storedHistory));
-      }
+      const userHistory = await getAnalysisHistory(uid);
+      setHistory(userHistory);
     } catch (error) {
-      console.error('Failed to load history from localStorage', error);
+      console.error('Failed to load history from Firestore', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not load analysis history.',
+      });
+    } finally {
+      setIsHistoryLoading(false);
     }
-  }, [user]);
+  }, [toast]);
 
-  const updateHistory = (newHistory: AnalysisResult[]) => {
-    if (!user) return;
-    setHistory(newHistory);
-    try {
-      localStorage.setItem(`deepsafed-history-${user.uid}`, JSON.stringify(newHistory));
-    } catch (error) {
-      console.error('Failed to save history to localStorage', error);
+  useEffect(() => {
+    if (user) {
+      fetchHistory(user.uid);
     }
-  };
+  }, [user, fetchHistory]);
 
   const handleAnalysis = async (file: File) => {
+    if (!user) {
+      toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to run an analysis.' });
+      return;
+    }
     setIsLoading(true);
     setCurrentAnalysis(null);
 
@@ -80,16 +88,24 @@ export default function DashboardPage({ activeView }: { activeView: string }) {
             throw new Error(result.error);
         }
 
-        const newAnalysis: AnalysisResult = {
+        const newAnalysis: Omit<AnalysisResult, 'id' | 'timestamp'> = {
           ...result,
-          id: new Date().toISOString(),
           filename: file.name,
-          timestamp: new Date().toISOString(),
           videoPreviewUrl: URL.createObjectURL(file),
+          videoDataUri: videoDataUri, 
         };
 
-        setCurrentAnalysis(newAnalysis);
-        updateHistory([newAnalysis, ...history]);
+        const newId = await addAnalysisToHistory(user.uid, newAnalysis);
+        
+        const finalAnalysis: AnalysisResult = {
+          ...newAnalysis,
+          id: newId,
+          timestamp: new Date().toISOString(),
+        }
+
+        setCurrentAnalysis(finalAnalysis);
+        setHistory(prev => [finalAnalysis, ...prev]);
+
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
         toast({
@@ -115,15 +131,54 @@ export default function DashboardPage({ activeView }: { activeView: string }) {
     setCurrentAnalysis(result);
   };
 
-  const handleClearHistory = () => {
-    updateHistory([]);
-    setCurrentAnalysis(null);
-    toast({
-        title: 'History Cleared',
-        description: 'Your analysis history has been removed.',
-    })
+  const handleClearHistory = async () => {
+    if (!user) return;
+    try {
+        await clearAnalysisHistory(user.uid);
+        setHistory([]);
+        setCurrentAnalysis(null);
+        toast({
+            title: 'History Cleared',
+            description: 'Your analysis history has been removed.',
+        })
+    } catch(error) {
+         toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Could not clear analysis history.',
+        })
+    }
   };
   
+  const renderContent = () => {
+    switch (activeView) {
+      case 'profile':
+        return <Profile user={user!} />;
+      case 'settings':
+        return <Settings />;
+      case 'dashboard':
+      default:
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-2 space-y-8">
+              <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
+              {isLoading && <LoadingSkeleton />}
+              {currentAnalysis && <AnalysisResultDisplay result={currentAnalysis} />}
+            </div>
+            <div className="lg:col-span-1">
+              <HistorySidebar
+                history={history}
+                onSelect={handleSelectHistory}
+                onClear={handleClearHistory}
+                currentAnalysisId={currentAnalysis?.id}
+                isLoading={isHistoryLoading}
+              />
+            </div>
+          </div>
+        );
+    }
+  }
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background dark">
@@ -132,31 +187,7 @@ export default function DashboardPage({ activeView }: { activeView: string }) {
     );
   }
 
-  if (activeView === 'profile') {
-    return <Profile user={user} />;
-  }
-
-  if (activeView === 'settings') {
-    return <Settings />;
-  }
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-      <div className="lg:col-span-2 space-y-8">
-        <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
-        {isLoading && <LoadingSkeleton />}
-        {currentAnalysis && <AnalysisResultDisplay result={currentAnalysis} />}
-      </div>
-      <div className="lg:col-span-1">
-        <HistorySidebar
-          history={history}
-          onSelect={handleSelectHistory}
-          onClear={handleClearHistory}
-          currentAnalysisId={currentAnalysis?.id}
-        />
-      </div>
-    </div>
-  );
+  return renderContent();
 }
 
 function LoadingSkeleton() {

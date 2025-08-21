@@ -12,7 +12,7 @@ interface AnalysisResultDisplayProps {
 }
 
 export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayProps) {
-  const { isDeepfake, deepfakeConfidence, aiGeneratedConfidence, analysis, filename, videoPreviewUrl } = result;
+  const { isDeepfake, deepfakeConfidence, aiGeneratedConfidence, analysis, filename, videoPreviewUrl, videoDataUri } = result;
   
   const overallConfidence = Math.max(deepfakeConfidence, aiGeneratedConfidence);
   const confidencePercentage = Math.round(overallConfidence * 100);
@@ -30,6 +30,9 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
       }
       return <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />;
   }
+  
+  // Use the live object URL for preview, but fallback to data URI if needed
+  const videoSrc = videoPreviewUrl || videoDataUri;
 
   return (
     <Card className="overflow-hidden bg-card/50 border-border/50">
@@ -71,7 +74,7 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
                 <p className="text-muted-foreground text-sm leading-relaxed bg-muted/30 p-4 rounded-md border border-border/50">{analysis}</p>
             </div>
             <div className="w-full aspect-video rounded-md overflow-hidden bg-muted">
-                <video src={videoPreviewUrl} controls className="w-full h-full object-cover" data-ai-hint="video player"></video>
+                {videoSrc && <video src={videoSrc} controls className="w-full h-full object-cover" data-ai-hint="video player"></video>}
             </div>
         </div>
       </CardContent>
