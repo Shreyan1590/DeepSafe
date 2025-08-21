@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { AnalysisResult } from '@/app/dashboard/page';
@@ -24,10 +25,10 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
   
   const getVerdictIcon = () => {
       if (isDeepfake) {
-        if (overallConfidence > 0.75) return <XCircle className="h-6 w-6 text-red-400" />;
-        return <AlertTriangle className="h-6 w-6 text-yellow-400" />;
+        if (overallConfidence > 0.75) return <XCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-400" />;
+        return <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />;
       }
-      return <CheckCircle2 className="h-6 w-6 text-green-400" />;
+      return <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />;
   }
 
   return (
@@ -35,10 +36,10 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
-                <CardTitle className="font-headline text-2xl">Analysis Complete</CardTitle>
-                <CardDescription className="truncate max-w-xs md:max-w-md text-muted-foreground">{filename}</CardDescription>
+                <CardTitle className="font-headline text-xl sm:text-2xl">Analysis Complete</CardTitle>
+                <CardDescription className="truncate max-w-[200px] xs:max-w-xs sm:max-w-md text-muted-foreground">{filename}</CardDescription>
             </div>
-            <Badge variant={isDeepfake ? 'destructive' : 'default'} className="text-base px-4 py-2 bg-opacity-50 border-opacity-50">
+            <Badge variant={isDeepfake ? 'destructive' : 'default'} className="text-sm sm:text-base px-3 py-1.5 sm:px-4 sm:py-2 bg-opacity-50 border-opacity-50 self-start sm:self-center">
               {getVerdictIcon()}
               <span className="ml-2">{isDeepfake ? 'AI Content Detected' : 'Likely Authentic'}</span>
             </Badge>
@@ -47,17 +48,17 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-              <div className="flex justify-between items-baseline">
-                  <h3 className="text-lg font-semibold">Manipulation Confidence</h3>
-                  <p className={`text-2xl font-bold ${deepfakeConfidence > 0.75 ? 'text-red-400' : deepfakeConfidence > 0.5 ? 'text-yellow-400' : 'text-green-400'}`}>{Math.round(deepfakeConfidence * 100)}%</p>
+              <div className="flex justify-between items-baseline gap-2">
+                  <h3 className="text-base sm:text-lg font-semibold">Manipulation Confidence</h3>
+                  <p className={`text-xl sm:text-2xl font-bold ${deepfakeConfidence > 0.75 ? 'text-red-400' : deepfakeConfidence > 0.5 ? 'text-yellow-400' : 'text-green-400'}`}>{Math.round(deepfakeConfidence * 100)}%</p>
               </div>
               <Progress value={Math.round(deepfakeConfidence * 100)} indicatorClassName={getConfidenceColor(deepfakeConfidence)} />
               <p className="text-xs text-muted-foreground">Likelihood of face-swapping or similar edits.</p>
           </div>
            <div className="space-y-2">
-              <div className="flex justify-between items-baseline">
-                  <h3 className="text-lg font-semibold">AI Generation Confidence</h3>
-                  <p className={`text-2xl font-bold ${aiGeneratedConfidence > 0.75 ? 'text-red-400' : aiGeneratedConfidence > 0.5 ? 'text-yellow-400' : 'text-green-400'}`}>{Math.round(aiGeneratedConfidence * 100)}%</p>
+              <div className="flex justify-between items-baseline gap-2">
+                  <h3 className="text-base sm:text-lg font-semibold">AI Generation Confidence</h3>
+                  <p className={`text-xl sm:text-2xl font-bold ${aiGeneratedConfidence > 0.75 ? 'text-red-400' : aiGeneratedConfidence > 0.5 ? 'text-yellow-400' : 'text-green-400'}`}>{Math.round(aiGeneratedConfidence * 100)}%</p>
               </div>
               <Progress value={Math.round(aiGeneratedConfidence * 100)} indicatorClassName={getConfidenceColor(aiGeneratedConfidence)} />
               <p className="text-xs text-muted-foreground">Likelihood of being fully computer-generated.</p>
@@ -66,7 +67,7 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Detailed Analysis</h3>
+                <h3 className="text-base sm:text-lg font-semibold">Detailed Analysis</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed bg-muted/30 p-4 rounded-md border border-border/50">{analysis}</p>
             </div>
             <div className="w-full aspect-video rounded-md overflow-hidden bg-muted">

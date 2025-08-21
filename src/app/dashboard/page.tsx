@@ -134,7 +134,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background dark">
       <Header />
-      <main className="flex-1 container mx-auto p-4 md:p-8">
+      <main className="flex-1 container mx-auto p-4 sm:p-6 md:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <div className="lg:col-span-2 space-y-8">
             <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
@@ -160,12 +160,12 @@ function LoadingSkeleton() {
       <Card className="bg-card/50 border-border/50">
         <CardContent className="p-6">
           <div className="space-y-6 animate-pulse">
-            <div className="flex justify-between items-center">
-                <Skeleton className="h-8 w-1/3 bg-muted" />
-                <Skeleton className="h-8 w-24 bg-muted" />
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <Skeleton className="h-8 w-2/3 sm:w-1/3 bg-muted" />
+                <Skeleton className="h-8 w-32 sm:w-24 bg-muted" />
             </div>
             <div className="space-y-4">
-                <Skeleton className="h-6 w-1/4 bg-muted" />
+                <Skeleton className="h-6 w-1/2 sm:w-1/4 bg-muted" />
                 <Skeleton className="h-10 w-full bg-muted" />
             </div>
             <div className="space-y-2">

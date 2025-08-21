@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
@@ -78,8 +79,8 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
   return (
     <Card className="bg-card/50 border-border/50">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Upload Video</CardTitle>
-        <CardDescription className="text-muted-foreground">Drag & drop a video file or click to select one for deepfake analysis.</CardDescription>
+        <CardTitle className="font-headline text-xl sm:text-2xl">Upload Video</CardTitle>
+        <CardDescription className="text-muted-foreground text-sm sm:text-base">Drag & drop a video file or click to select one for deepfake analysis.</CardDescription>
       </CardHeader>
       <CardContent>
         <div
@@ -87,7 +88,7 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           onClick={triggerFileSelect}
-          className={`relative group flex flex-col items-center justify-center w-full p-10 border-2 border-dashed rounded-lg transition-colors duration-300
+          className={`relative group flex flex-col items-center justify-center w-full p-6 sm:p-10 border-2 border-dashed rounded-lg transition-colors duration-300
             ${isLoading ? 'cursor-not-allowed bg-muted/30' : 'cursor-pointer'}
             ${isDragging ? 'border-primary bg-primary/10' : 'border-border/50 hover:border-primary/50 hover:bg-muted/50'}
           `}
@@ -102,15 +103,15 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
           />
           {isLoading ? (
             <div className="flex flex-col items-center gap-4 text-center">
-              <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              <p className="font-semibold text-lg text-primary">Analyzing Video...</p>
-              <p className="text-muted-foreground">This may take a moment. Please don't close this page.</p>
+              <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin" />
+              <p className="font-semibold text-base sm:text-lg text-primary">Analyzing Video...</p>
+              <p className="text-muted-foreground text-sm">This may take a moment. Please don't close this page.</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-4 text-center">
-              <UploadCloud className="h-12 w-12 text-muted-foreground transition-colors group-hover:text-primary" />
-              <p className="font-semibold text-lg">Drag & drop your video here</p>
-              <p className="text-muted-foreground">or</p>
+              <UploadCloud className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground transition-colors group-hover:text-primary" />
+              <p className="font-semibold text-base sm:text-lg">Drag & drop your video here</p>
+              <p className="text-muted-foreground text-sm">or</p>
               <Button variant="outline" size="lg" disabled={isLoading}>
                 Browse Files
               </Button>

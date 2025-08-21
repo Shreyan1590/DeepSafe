@@ -122,9 +122,9 @@ export default function LoginPage() {
     <div className="relative flex flex-col min-h-screen bg-background dark w-full h-full">
         <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
-                <a href="/" className="flex items-center gap-3">
-                    <ShieldCheck className="h-8 w-8 text-primary" />
-                    <h1 className="text-2xl font-headline font-bold text-foreground">
+                <a href="/" className="flex items-center gap-2 sm:gap-3">
+                    <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+                    <h1 className="text-xl sm:text-2xl font-headline font-bold text-foreground">
                     DeepSafe
                     </h1>
                 </a>
