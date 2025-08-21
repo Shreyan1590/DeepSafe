@@ -1,6 +1,7 @@
 
 'use client';
 
+import { Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,7 +20,9 @@ export default function LandingPage() {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background dark w-full h-full">
-      <Background3D />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Background3D />
+      </Suspense>
       <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
