@@ -26,7 +26,7 @@ export default function HistorySidebar({ history, onSelect, onClear, currentAnal
           <History className="h-6 w-6" />
           <CardTitle className="font-headline text-2xl">History</CardTitle>
         </div>
-        {history.length > 0 && (
+        {!isLoading && history.length > 0 && (
           <Button variant="ghost" size="icon" onClick={onClear} aria-label="Clear history">
             <Trash2 className="h-4 w-4" />
           </Button>

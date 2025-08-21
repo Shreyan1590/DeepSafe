@@ -56,6 +56,12 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [fileToAnalyze, setFileToAnalyze] = useState<File | null>(null);
   const { toast } = useToast();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
 
   useEffect(() => {
     // Set the first item in history as the current analysis when the page loads
@@ -152,7 +158,7 @@ export default function DashboardPage() {
             onSelect={handleSelectHistory}
             onClear={handleClearHistory}
             currentAnalysisId={currentAnalysis?.id}
-            isLoading={false} // No more loading from firestore
+            isLoading={!mounted}
             />
         </div>
     </div>
