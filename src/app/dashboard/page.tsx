@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { AnalyzeDeepfakeOutput } from '@/ai/flows/analyze-deepfake';
-import { runAnalysisAction } from '@/app/actions';
+import { runAnalysisAction, getAnalysisHistoryAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import VideoUploader from '@/components/video-uploader';
 import AnalysisResultDisplay from '@/components/analysis-result-display';
@@ -11,7 +11,7 @@ import HistorySidebar from '@/components/history-sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { User as FirebaseUser } from 'firebase/auth';
-import { addAnalysisToHistory, getAnalysisHistory, clearAnalysisHistory } from '@/lib/firestore';
+import { addAnalysisToHistory, clearAnalysisHistory } from '@/lib/firestore';
 import VideoFrameExtractor from '@/components/video-frame-extractor';
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
@@ -37,14 +37,18 @@ export default function DashboardPage({ user }: DashboardPageProps) {
   const fetchHistory = useCallback(async (uid: string) => {
     setIsHistoryLoading(true);
     try {
-      const userHistory = await getAnalysisHistory(uid);
-      setHistory(userHistory);
+      const result = await getAnalysisHistoryAction(uid);
+      if ('error' in result) {
+        throw new Error(result.error);
+      }
+      setHistory(result);
     } catch (error) {
-      console.error('Failed to load history from Firestore', error);
+      console.error('Failed to load history from action', error);
+      const errorMessage = error instanceof Error ? error.message : "Could not load analysis history.";
       toast({
         variant: 'destructive',
         title: "Error",
-        description: "Could not load analysis history.",
+        description: errorMessage,
       });
     } finally {
       setIsHistoryLoading(false);
