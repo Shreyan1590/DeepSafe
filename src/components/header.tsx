@@ -3,12 +3,7 @@
 
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
-<<<<<<< HEAD
-import { getAuth } from 'firebase/auth';
-import { app } from '@/lib/firebase';
-=======
->>>>>>> 5fc607e (In this, when going to in live server by the url or in any mobile, I can)
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { SidebarTrigger } from './ui/sidebar';
 import Link from 'next/link';
 
@@ -18,32 +13,7 @@ export default function Header({
     children?: React.ReactNode;
 }) {
   const pathname = usePathname();
-<<<<<<< HEAD
-  const { toast } = useToast();
-  const user = useAuth();
-  
-  const handleSignOut = async () => {
-    const auth = getAuth(app);
-    try {
-      await auth.signOut();
-      router.push('/login');
-      toast({
-        title: "Signed Out",
-        description: "You have been successfully signed out.",
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: "Sign Out Failed",
-        description: "There was an error signing out. Please try again.",
-      });
-    }
-  };
-
-  const isLoginPage = pathname === '/login';
-=======
   const isDashboard = pathname === '/dashboard';
->>>>>>> 5fc607e (In this, when going to in live server by the url or in any mobile, I can)
 
   return (
     <header className="py-4 px-4 md:px-6 bg-card border-b sticky top-0 z-50">
