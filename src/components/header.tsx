@@ -1,4 +1,3 @@
-
 'use client';
 
 import { ShieldCheck, LogOut, Languages } from 'lucide-react';
