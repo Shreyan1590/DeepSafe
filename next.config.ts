@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    config.externals.push({
+      'maath/random/dist/maath-random.esm': 'maath/random/dist/maath-random.esm',
+    });
+    return config;
+  },
 };
 
 export default nextConfig;

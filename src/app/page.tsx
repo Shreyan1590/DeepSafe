@@ -6,18 +6,18 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { ShieldCheck, ArrowRight, GaugeCircle, ScanEye, ShieldAlert } from 'lucide-react';
+import Background3D from '@/components/3d-background';
 
 export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col min-h-screen bg-background dark">
+    <div className="relative flex flex-col min-h-screen bg-background dark w-full h-full">
+      <Background3D />
       <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -52,7 +52,7 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-                <Card className="bg-card/50 border-border/50">
+                <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <CardHeader className="flex flex-row items-center gap-4">
                         <ScanEye className="h-10 w-10 text-primary" />
                         <CardTitle>Advanced Analysis</CardTitle>
@@ -63,7 +63,7 @@ export default function LandingPage() {
                         </p>
                     </CardContent>
                 </Card>
-                 <Card className="bg-card/50 border-border/50">
+                 <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <CardHeader className="flex flex-row items-center gap-4">
                         <GaugeCircle className="h-10 w-10 text-primary" />
                         <CardTitle>Confidence Score</CardTitle>
@@ -74,7 +74,7 @@ export default function LandingPage() {
                         </p>
                     </CardContent>
                 </Card>
-                 <Card className="bg-card/50 border-border/50">
+                 <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <CardHeader className="flex flex-row items-center gap-4">
                         <ShieldAlert className="h-10 w-10 text-primary" />
                         <CardTitle>Use with Caution</CardTitle>

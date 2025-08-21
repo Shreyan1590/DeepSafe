@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShieldCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Background3D from '@/components/3d-background';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -61,6 +62,12 @@ export default function LoginPage() {
                   break;
               case "auth/email-already-in-use":
                   message = "This email is already registered. Please log in.";
+                  break;
+              case "auth/unauthorized-domain":
+                  message = "This domain is not authorized for authentication. Please check your Firebase settings.";
+                  break;
+              case "auth/popup-closed-by-user":
+                  message = "The sign-in popup was closed before completion. Please try again.";
                   break;
               default:
                   message = err.message;
@@ -112,7 +119,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background dark">
+    <div className="relative flex flex-col min-h-screen bg-background dark w-full h-full">
+        <Background3D />
         <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
                 <a href="/" className="flex items-center gap-3">
@@ -131,7 +139,7 @@ export default function LoginPage() {
                     <TabsTrigger value="signup">Sign Up</TabsTrigger>
                 </TabsList>
                 <TabsContent value="login">
-                    <Card className="bg-card/50 border-border/50">
+                    <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle>Login</CardTitle>
                         <CardDescription>
@@ -181,7 +189,7 @@ export default function LoginPage() {
                     </Card>
                 </TabsContent>
                 <TabsContent value="signup">
-                    <Card className="bg-card/50 border-border/50">
+                    <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle>Sign Up</CardTitle>
                         <CardDescription>
