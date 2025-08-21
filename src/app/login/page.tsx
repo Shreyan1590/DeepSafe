@@ -171,15 +171,10 @@ const AuthForm = () => {
         setIsProcessing(true);
         const provider = new GoogleAuthProvider();
         try {
-            if (isMobile) {
-                await signInWithRedirect(auth, provider);
-            } else {
-                const userCredential = await signInWithPopup(auth, provider);
-                handleAuthSuccess(userCredential.user);
-            }
+            // Use redirect for all cases as it is more reliable
+            await signInWithRedirect(auth, provider);
         } catch (err: any) {
             handleAuthError(err, 'google');
-        } finally {
             setIsProcessing(false);
         }
     };
@@ -340,10 +335,11 @@ export default function LoginPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.push('/dashboard');
-      } else {
-        setIsCheckingAuth(false);
+        // Do not redirect here, let the welcome dialog handle it or let AuthForm handle it.
+        // This prevents the race condition where this redirects before the welcome dialog can show.
+        // The check in AuthForm for redirect result is now the primary entry point after a redirect.
       }
+      setIsCheckingAuth(false);
     });
     return () => unsubscribe();
   }, [auth, router]);
