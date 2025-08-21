@@ -38,6 +38,8 @@ import { ShieldCheck, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+
 
 const AuthForm = () => {
     const [email, setEmail] = useState('');
@@ -69,7 +71,8 @@ const AuthForm = () => {
                 case "auth/wrong-password":
                 case "auth/invalid-credential":
                      if (context === 'login') {
-                        message = "Incorrect email or password. If you don't have an account, please sign up.";
+                        message = "No user found with this email. Please sign up first.";
+                        setActiveTab('signup'); // Switch to signup tab
                      } else {
                         message = "Incorrect email or password. Please try again.";
                      }
@@ -171,113 +174,127 @@ const AuthForm = () => {
         )
     }
 
+    const variants = {
+        hidden: { x: activeTab === 'login' ? '-100%' : '100%', opacity: 0 },
+        visible: { x: 0, opacity: 1 },
+    };
+
     return (
         <>
-         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
+         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md overflow-hidden">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
-            <TabsContent value="login">
-                <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
-                <CardHeader>
-                    <CardTitle>Login</CardTitle>
-                    <CardDescription>
-                    Access your account to continue.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
-                    <Input
-                        id="login-email"
-                        type="email"
-                        placeholder="m@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    </div>
-                    <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
-                    <Input
-                        id="login-password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    </div>
-                    {error && <p className="text-destructive text-sm">{error}</p>}
-                    <Button onClick={handleEmailPasswordLogin} className="w-full">
-                    Login with Email
-                    </Button>
-                    <div className="relative my-4">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
+            <motion.div
+                 key={activeTab}
+                 initial="hidden"
+                 animate="visible"
+                 exit="hidden"
+                 variants={variants}
+                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+                <TabsContent value="login" forceMount>
+                    <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
+                    <CardHeader>
+                        <CardTitle>Login</CardTitle>
+                        <CardDescription>
+                        Access your account to continue.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                        <Label htmlFor="login-email">Email</Label>
+                        <Input
+                            id="login-email"
+                            type="email"
+                            placeholder="m@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
                         </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-card px-2 text-muted-foreground">
-                            Or continue with
-                            </span>
+                        <div className="space-y-2">
+                        <Label htmlFor="login-password">Password</Label>
+                        <Input
+                            id="login-password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
                         </div>
-                    </div>
-                    <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-                    Sign In with Google
-                    </Button>
-                </CardContent>
-                </Card>
-            </TabsContent>
-            <TabsContent value="signup">
-                <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
-                <CardHeader>
-                    <CardTitle>Sign Up</CardTitle>
-                    <CardDescription>
-                    Create an account to get started.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                        id="signup-email"
-                        type="email"
-                        placeholder="m@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    </div>
-                    <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input
-                        id="signup-password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    </div>
-                    {error && <p className="text-destructive text-sm">{error}</p>}
-                    <Button onClick={handleEmailPasswordSignUp} className="w-full">
-                    Sign Up with Email
-                    </Button>
-                    <div className="relative my-4">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
+                        {error && <p className="text-destructive text-sm">{error}</p>}
+                        <Button onClick={handleEmailPasswordLogin} className="w-full">
+                        Login with Email
+                        </Button>
+                        <div className="relative my-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-card px-2 text-muted-foreground">
+                                Or continue with
+                                </span>
+                            </div>
                         </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-card px-2 text-muted-foreground">
-                            Or continue with
-                            </span>
+                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
+                        Sign In with Google
+                        </Button>
+                    </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="signup" forceMount>
+                    <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
+                    <CardHeader>
+                        <CardTitle>Sign Up</CardTitle>
+                        <CardDescription>
+                        Create an account to get started.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                        <Label htmlFor="signup-email">Email</Label>
+                        <Input
+                            id="signup-email"
+                            type="email"
+                            placeholder="m@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
                         </div>
-                    </div>
-                    <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-                    Sign Up with Google
-                    </Button>
-                </CardContent>
-                </Card>
-            </TabsContent>
+                        <div className="space-y-2">
+                        <Label htmlFor="signup-password">Password</Label>
+                        <Input
+                            id="signup-password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        </div>
+                        {error && <p className="text-destructive text-sm">{error}</p>}
+                        <Button onClick={handleEmailPasswordSignUp} className="w-full">
+                        Sign Up with Email
+                        </Button>
+                        <div className="relative my-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-card px-2 text-muted-foreground">
+                                Or continue with
+                                </span>
+                            </div>
+                        </div>
+                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
+                        Sign Up with Google
+                        </Button>
+                    </CardContent>
+                    </Card>
+                </TabsContent>
+            </motion.div>
         </Tabs>
         <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
             <DialogContent>
