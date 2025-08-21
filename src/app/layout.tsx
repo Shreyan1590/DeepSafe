@@ -33,6 +33,7 @@ export default function RootLayout({
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme) {
+      document.documentElement.className = ''; // Clear existing classes
       document.documentElement.classList.add(storedTheme);
     } else {
       document.documentElement.classList.add('dark');
