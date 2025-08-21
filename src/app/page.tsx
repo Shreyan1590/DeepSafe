@@ -10,7 +10,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ShieldCheck, ArrowRight, GaugeCircle, ScanEye, ShieldAlert } from 'lucide-react';
-import Background3D from '@/components/3d-background';
+import dynamic from 'next/dynamic';
+
+const Background3D = dynamic(() => import('@/components/3d-background'), { ssr: false });
 
 export default function LandingPage() {
   const router = useRouter();

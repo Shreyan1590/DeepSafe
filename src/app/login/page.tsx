@@ -24,7 +24,9 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShieldCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Background3D from '@/components/3d-background';
+import dynamic from 'next/dynamic';
+
+const Background3D = dynamic(() => import('@/components/3d-background'), { ssr: false });
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
