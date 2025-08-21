@@ -58,7 +58,7 @@ export default function Header({
             </Link>
         </div>
         <div className="flex items-center gap-2">
-            {!isDashboard && (
+            {isDashboard && (
                  <Button variant="outline" asChild>
                     <Link href="/">
                         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
