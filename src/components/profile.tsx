@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 interface ProfileProps {
   user: User;
@@ -91,7 +92,7 @@ export default function Profile({ user }: ProfileProps) {
             </Avatar>
             <div className="space-y-2 flex-1">
                 <Label htmlFor="photoURL">Avatar URL</Label>
-                <Input id="photoURL" value={profile.photoURL} onChange={handleInputChange} placeholder="https://example.com/image.png"/>
+                <Input id="photoURL" value={profile.photoURL} onChange={handleInputChange} placeholder="https://example.com/image.png" disabled className="bg-black text-white" />
             </div>
         </div>
         <div className="space-y-2">
