@@ -1,14 +1,12 @@
-
 # 🛡️ DeepSafe: AI-Powered Deepfake Detection
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
-[![Firebase](https://img.shields.io/badge/Firebase-SDK_v11-orange?logo=firebase)](https://firebase.google.com/)
 [![Genkit](https://img.shields.io/badge/Genkit-AI-blue?logo=google&logoColor=white)](https://firebase.google.com/docs/genkit)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-blue?logo=tailwind-css)](https://tailwindcss.com/)
 
-DeepSafe is an advanced, web-based tool that leverages the power of Google's Gemini AI to analyze video content for signs of deepfake manipulation and full AI generation. In an era where digital misinformation is rampant, DeepSafe provides a crucial layer of verification, allowing users to assess the authenticity of video media with confidence.
+DeepSafe is an advanced, web-based tool created by **Shreyan**. It leverages the power of Google's Gemini AI to analyze video content for signs of deepfake manipulation and full AI generation. In an era where digital misinformation is rampant, DeepSafe provides a crucial layer of verification, allowing users to assess the authenticity of video media with confidence.
 
 ![DeepSafe Dashboard Screenshot](https://placehold.co/800x500.png)
 *A placeholder image of the DeepSafe dashboard.*
@@ -29,7 +27,7 @@ DeepSafe is an advanced, web-based tool that leverages the power of Google's Gem
 
 -   **Framework**: [Next.js](https://nextjs.org/) (App Router)
 -   **Language**: [TypeScript](https://www.typescriptlang.org/)
--   **AI Toolkit**: [Firebase Genkit](https://firebase.google.com/docs/genkit)
+-   **AI Toolkit**: [Genkit](https://firebase.google.com/docs/genkit)
 -   **AI Model**: [Google Gemini 1.5 Flash](https://ai.google.dev/docs/gemini_api_overview)
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 -   **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
@@ -50,7 +48,7 @@ Follow these instructions to get a local copy of DeepSafe up and running for dev
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/deepsafe.git
+    git clone https://github.com/shreyan/deepsafe.git
     cd deepsafe
     ```
 
@@ -60,23 +58,22 @@ Follow these instructions to get a local copy of DeepSafe up and running for dev
     ```
 
 3.  **Set up environment variables:**
-    Create a file named `.env` in the root of the project and add your Firebase and Gemini credentials.
+    Create a file named `.env` in the root of the project and add your Firebase and Gemini credentials. **Do not share these keys publicly.**
 
     ```env
     # Firebase Web App Configuration
     # You can get this from your Firebase project settings
-    NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSy..."
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-project-id.firebaseapp.com"
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="your-project-id.appspot.com"
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="12345..."
-    NEXT_PUBLIC_FIREBASE_APP_ID="1:12345:web:abcd..."
+    NEXT_PUBLIC_FIREBASE_API_KEY="YOUR_API_KEY"
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="YOUR_AUTH_DOMAIN"
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID="YOUR_PROJECT_ID"
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="YOUR_STORAGE_BUCKET"
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="YOUR_SENDER_ID"
+    NEXT_PUBLIC_FIREBASE_APP_ID="YOUR_APP_ID"
 
     # Google AI API Key for Genkit
     # You can get this from Google AI Studio
-    GEMINI_API_KEY="AIzaSy..."
+    GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
     ```
-    *Note: The `firebase.ts` file may need to be updated to consume these environment variables instead of being hardcoded.*
 
 4.  **Run the Genkit developer UI (optional but recommended):**
     In a separate terminal, run the Genkit developer UI to inspect your AI flows.
@@ -137,4 +134,4 @@ Contributions are what make the open-source community such an amazing place to l
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. Copyright (c) 2024, Shreyan. See `LICENSE` for more information.
