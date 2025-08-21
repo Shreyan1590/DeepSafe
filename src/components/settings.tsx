@@ -14,26 +14,23 @@ export default function Settings() {
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme') || 'dark';
     setCurrentTheme(storedTheme);
+    // Ensure the correct class is on the html element on mount
+    const root = window.document.documentElement;
+    root.classList.remove(...themes.map(t => t.name));
+    root.classList.add(storedTheme);
     setMounted(true);
   }, []);
 
   const handleThemeChange = (themeName: string) => {
     setCurrentTheme(themeName);
     const root = window.document.documentElement;
-    const theme = themes.find(t => t.name === themeName);
     
-    if (theme) {
-        // Clear all theme classes
-        themes.forEach(t => root.classList.remove(t.name));
-        // Add the new theme class
-        root.classList.add(theme.name);
-        
-        Object.entries(theme.cssVars).forEach(([key, value]) => {
-            root.style.setProperty(key, value);
-        });
-        localStorage.setItem('theme', themeName);
-        root.setAttribute('data-theme', themeName);
-    }
+    // Remove all possible theme classes
+    themes.forEach(t => root.classList.remove(t.name));
+    // Add the new theme class
+    root.classList.add(themeName);
+
+    localStorage.setItem('theme', themeName);
   };
   
   if (!mounted) {
@@ -97,5 +94,3 @@ export default function Settings() {
     </Card>
   );
 }
-
-    

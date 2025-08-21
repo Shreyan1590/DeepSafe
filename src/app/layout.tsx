@@ -9,11 +9,15 @@ import AppProviders from './providers';
 =======
 import { Toaster } from "@/components/ui/toaster"
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { useEffect } from 'react';
 import { themes } from '@/lib/themes';
 >>>>>>> 4d568ef (Create a sidebar for the application and in that, make as some sections)
 =======
 >>>>>>> c20f9f2 (Console Error)
+=======
+import { useEffect } from 'react';
+>>>>>>> 51dc869 (Make as default theme is in dark. Then if the user wants to change the t)
 
 const metadata: Metadata = {
   title: 'DeepSafe',
@@ -25,6 +29,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      document.documentElement.classList.add(storedTheme);
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -49,5 +62,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    

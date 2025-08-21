@@ -31,7 +31,7 @@ const analysisResultConverter = {
     const data = snapshot.data(options);
     const timestamp = data.timestamp as Timestamp;
     // Create a client-side preview URL from the stored data URI
-    const blob = data.videoDataUri ? a(data.videoDataUri) : null;
+    const blob = data.videoDataUri ? dataURItoBlob(data.videoDataUri) : null;
     const videoPreviewUrl = blob ? URL.createObjectURL(blob) : '';
     
     return {
