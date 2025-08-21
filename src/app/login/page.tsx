@@ -10,6 +10,8 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   User,
 } from 'firebase/auth';
 import { app } from '@/lib/firebase'; // Use the initialized app
@@ -24,17 +26,20 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ShieldCheck, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import Link from 'next/link';
 
 const AuthForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
     const auth = getAuth(app);
+    const isMobile = useIsMobile();
 
     const handleAuthSuccess = useCallback((user: User) => {
         router.push('/dashboard');
@@ -61,6 +66,8 @@ const AuthForm = () => {
                 case "auth/popup-closed-by-user":
                     message = "Sign-in popup closed. Please try again.";
                     break;
+                case "auth/cancelled-popup-request":
+                    return; // Do nothing, user intentionally closed it.
                 case "auth/auth-domain-config-required":
                 case "auth/unauthorized-domain":
                      message = "This domain is not authorized for authentication.";
@@ -78,6 +85,23 @@ const AuthForm = () => {
             description: message,
         });
     }, [toast]);
+
+    useEffect(() => {
+        const processRedirectResult = async () => {
+            setIsProcessing(true);
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    handleAuthSuccess(result.user);
+                }
+            } catch (err: any) {
+                handleAuthError(err);
+            } finally {
+                setIsProcessing(false);
+            }
+        };
+        processRedirectResult();
+    }, [auth, handleAuthSuccess, handleAuthError]);
 
 
     const handleEmailPasswordSignUp = async () => {
@@ -108,12 +132,25 @@ const AuthForm = () => {
         setError(null);
         const provider = new GoogleAuthProvider();
         try {
-            const userCredential = await signInWithPopup(auth, provider);
-            handleAuthSuccess(userCredential.user);
+            if (isMobile) {
+                await signInWithRedirect(auth, provider);
+            } else {
+                const userCredential = await signInWithPopup(auth, provider);
+                handleAuthSuccess(userCredential.user);
+            }
         } catch (err: any) {
             handleAuthError(err);
         }
     };
+    
+    if (isProcessing) {
+        return (
+            <div className="flex flex-col items-center justify-center gap-4 p-8">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-muted-foreground">Signing in...</p>
+            </div>
+        )
+    }
 
     return (
          <Tabs defaultValue="login" className="w-full max-w-md">
