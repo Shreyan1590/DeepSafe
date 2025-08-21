@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import type { AnalyzeDeepfakeOutput } from '@/ai/flows/analyze-deepfake';
 import { runAnalysisAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import Header from '@/components/header';
 import VideoUploader from '@/components/video-uploader';
 import AnalysisResultDisplay from '@/components/analysis-result-display';
 import HistorySidebar from '@/components/history-sidebar';
@@ -14,6 +13,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
+import Profile from '@/components/profile'; 
+import Settings from '@/components/settings';
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
   id: string;
@@ -22,7 +23,7 @@ export type AnalysisResult = AnalyzeDeepfakeOutput & {
   videoPreviewUrl: string;
 };
 
-export default function DashboardPage() {
+export default function DashboardPage({ activeView }: { activeView: string }) {
   const [user, setUser] = useState<User | null>(null);
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
@@ -131,26 +132,29 @@ export default function DashboardPage() {
     );
   }
 
+  if (activeView === 'profile') {
+    return <Profile user={user} />;
+  }
+
+  if (activeView === 'settings') {
+    return <Settings />;
+  }
+
   return (
-    <div className="flex flex-col min-h-screen bg-background dark">
-      <Header />
-      <main className="flex-1 container mx-auto p-4 sm:p-6 md:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <div className="lg:col-span-2 space-y-8">
-            <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
-            {isLoading && <LoadingSkeleton />}
-            {currentAnalysis && <AnalysisResultDisplay result={currentAnalysis} />}
-          </div>
-          <div className="lg:col-span-1">
-            <HistorySidebar
-              history={history}
-              onSelect={handleSelectHistory}
-              onClear={handleClearHistory}
-              currentAnalysisId={currentAnalysis?.id}
-            />
-          </div>
-        </div>
-      </main>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div className="lg:col-span-2 space-y-8">
+        <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
+        {isLoading && <LoadingSkeleton />}
+        {currentAnalysis && <AnalysisResultDisplay result={currentAnalysis} />}
+      </div>
+      <div className="lg:col-span-1">
+        <HistorySidebar
+          history={history}
+          onSelect={handleSelectHistory}
+          onClear={handleClearHistory}
+          currentAnalysisId={currentAnalysis?.id}
+        />
+      </div>
     </div>
   );
 }
