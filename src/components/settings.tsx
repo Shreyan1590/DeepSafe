@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { themes } from '@/lib/themes';
+import { useTranslations } from 'next-intl';
 
 export default function Settings() {
   const [mounted, setMounted] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('dark');
+  const t = useTranslations('Settings');
   
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme') || 'dark';
@@ -58,13 +60,13 @@ export default function Settings() {
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl">Settings</CardTitle>
-        <CardDescription>Customize the look and feel of the application.</CardDescription>
+        <CardTitle className="text-2xl">{t('settings')}</CardTitle>
+        <CardDescription>{t('settingsDesc')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-            <Label className="text-lg">Theme</Label>
-            <p className="text-sm text-muted-foreground">Select a theme for the application.</p>
+            <Label className="text-lg">{t('theme')}</Label>
+            <p className="text-sm text-muted-foreground">{t('themeDesc')}</p>
             <RadioGroup value={currentTheme} onValueChange={handleThemeChange} className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {themes.map(theme => (
                 <Label key={theme.name} htmlFor={theme.name} className="relative flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">

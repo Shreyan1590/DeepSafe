@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTranslations } from 'next-intl';
 
 interface ProfileProps {
   user: User;
@@ -27,6 +28,7 @@ export default function Profile({ user }: ProfileProps) {
   const [profile, setProfile] = useState<UserProfile>({ displayName: '', bio: '', photoURL: '' });
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const t = useTranslations('Profile');
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -56,14 +58,14 @@ export default function Profile({ user }: ProfileProps) {
     try {
       await setDoc(docRef, profile, { merge: true });
       toast({
-        title: 'Profile Updated',
-        description: 'Your details have been saved successfully.',
+        title: t('profileUpdated'),
+        description: t('profileUpdatedDesc'),
       });
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Update Failed',
-        description: 'Could not save your profile. Please try again.',
+        title: t('updateFailed'),
+        description: t('updateFailedDesc'),
       });
     }
   };
@@ -80,8 +82,8 @@ export default function Profile({ user }: ProfileProps) {
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl">Profile</CardTitle>
-        <CardDescription>View and edit your public profile details.</CardDescription>
+        <CardTitle className="text-2xl">{t('profile')}</CardTitle>
+        <CardDescription>{t('profileDesc')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center gap-4">
@@ -90,23 +92,23 @@ export default function Profile({ user }: ProfileProps) {
                 <AvatarFallback>{profile.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="space-y-2 flex-1">
-                <Label htmlFor="photoURL">Avatar URL</Label>
+                <Label htmlFor="photoURL">{t('avatarUrl')}</Label>
                 <Input id="photoURL" value={profile.photoURL} onChange={handleInputChange} placeholder="https://example.com/image.png"/>
             </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="displayName">Display Name</Label>
+          <Label htmlFor="displayName">{t('displayName')}</Label>
           <Input id="displayName" value={profile.displayName} onChange={handleInputChange} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('email')}</Label>
           <Input id="email" value={user.email || ''} disabled />
         </div>
          <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
-          <Input id="bio" value={profile.bio} onChange={handleInputChange} placeholder="Tell us a little about yourself" />
+          <Label htmlFor="bio">{t('bio')}</Label>
+          <Input id="bio" value={profile.bio} onChange={handleInputChange} placeholder={t('bioPlaceholder')} />
         </div>
-        <Button onClick={handleSave}>Save Changes</Button>
+        <Button onClick={handleSave}>{t('saveChanges')}</Button>
       </CardContent>
     </Card>
   );

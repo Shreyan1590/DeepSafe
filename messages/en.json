@@ -1,0 +1,115 @@
+
+{
+  "LandingPage": {
+    "title": "DeepSafe",
+    "login": "Login",
+    "signup": "Sign Up",
+    "headline": "Detect Deepfakes with Confidence",
+    "description": "DeepSafe is an advanced AI-powered tool that analyzes video content to identify sophisticated deepfake manipulations. Protect yourself from misinformation and verify the authenticity of your media.",
+    "getStarted": "Get Started for Free",
+    "advancedAnalysis": "Advanced Analysis",
+    "advancedAnalysisDesc": "Leverages state-of-the-art AI models to perform in-depth analysis of video frames, audio, and metadata to detect subtle signs of manipulation.",
+    "confidenceScore": "Confidence Score",
+    "confidenceScoreDesc": "Receive a clear, percentage-based confidence score that indicates the likelihood of a video being a deepfake, making it easy to interpret results.",
+    "useWithCaution": "Use with Caution",
+    "useWithCautionDesc": "As a prototype, our detection is highly effective but not infallible. Always consider the results as a strong indicator, not a final verdict."
+  },
+  "LoginPage": {
+    "title": "DeepSafe",
+    "login": "Login",
+    "signup": "Sign Up",
+    "accessAccount": "Access your account to continue.",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "loginWithEmail": "Login with Email",
+    "orContinueWith": "Or continue with",
+    "signInWithGoogle": "Sign In with Google",
+    "createAccount": "Create an account to get started.",
+    "signUpWithEmail": "Sign Up with Email",
+    "signUpWithGoogle": "Sign Up with Google",
+    "welcome": "Welcome!",
+    "continue": "Continue",
+    "backToHome": "Back to Home",
+    "signingIn": "Signing in...",
+    "loading": "Loading...",
+    "passwordMinLength": "Password must be at least 6 characters long.",
+    "authFailed": "Authentication Failed",
+    "errorNoUser": "No user found with this email. Please sign up first.",
+    "errorWrongPassword": "Incorrect email or password. Please try again.",
+    "errorEmailInUse": "This email is already registered. Please log in.",
+    "errorPopupClosed": "Sign-in popup closed. Please try again.",
+    "errorUnauthorizedDomain": "This domain is not authorized for authentication.",
+    "errorUnknown": "An unknown error occurred."
+  },
+  "DashboardPage": {
+    "authError": "Authentication Error",
+    "authErrorDesc": "You must be logged in to run an analysis.",
+    "historyError": "Error",
+    "historyErrorDesc": "Could not load analysis history.",
+    "fileReadError": "File Read Error",
+    "fileReadErrorDesc": "Could not read the selected file.",
+    "analysisFailed": "Analysis Failed",
+    "historyCleared": "History Cleared",
+    "historyClearedDesc": "Your analysis history has been removed.",
+    "clearHistoryErrorDesc": "Could not clear analysis history.",
+    "profile": "Profile",
+    "settings": "Settings",
+    "dashboard": "Dashboard"
+  },
+  "Header": {
+    "signOut": "Sign Out",
+    "signOutSuccess": "Signed Out",
+    "signOutSuccessDesc": "You have been successfully signed out.",
+    "signOutFailed": "Sign Out Failed",
+    "signOutFailedDesc": "There was an error signing out. Please try again."
+  },
+  "HistorySidebar": {
+    "history": "History",
+    "noHistory": "No History",
+    "noHistoryDesc": "Your past analyses will appear here."
+  },
+  "VideoUploader": {
+    "uploadVideo": "Upload Video",
+    "uploadVideoDesc": "Drag & drop a video file or click to select one for deepfake analysis.",
+    "analyzing": "Analyzing Video...",
+    "analyzingDesc": "This may take a moment. Please don't close this page.",
+    "dragAndDrop": "Drag & drop your video here",
+    "or": "or",
+    "browseFiles": "Browse Files",
+    "maxFileSize": "Max file size: 10GB",
+    "invalidFileType": "Invalid File Type",
+    "invalidFileTypeDesc": "Please upload a valid video file.",
+    "fileTooLarge": "File Too Large",
+    "fileTooLargeDesc": "Please upload a video smaller than 10GB."
+  },
+  "AnalysisResultDisplay": {
+    "analysisComplete": "Analysis Complete",
+    "aiContentDetected": "AI Content Detected",
+    "likelyAuthentic": "Likely Authentic",
+    "manipulationConfidence": "Manipulation Confidence",
+    "manipulationConfidenceDesc": "Likelihood of face-swapping or similar edits.",
+    "aiGenerationConfidence": "AI Generation Confidence",
+    "aiGenerationConfidenceDesc": "Likelihood of being fully computer-generated.",
+    "detailedAnalysis": "Detailed Analysis"
+  },
+  "Profile": {
+    "profile": "Profile",
+    "profileDesc": "View and edit your public profile details.",
+    "avatarUrl": "Avatar URL",
+    "displayName": "Display Name",
+    "email": "Email",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us a little about yourself",
+    "saveChanges": "Save Changes",
+    "profileUpdated": "Profile Updated",
+    "profileUpdatedDesc": "Your details have been saved successfully.",
+    "updateFailed": "Update Failed",
+    "updateFailedDesc": "Could not save your profile. Please try again."
+  },
+  "Settings": {
+    "settings": "Settings",
+    "settingsDesc": "Customize the look and feel of the application.",
+    "theme": "Theme",
+    "themeDesc": "Select a theme for the application."
+  }
+}
