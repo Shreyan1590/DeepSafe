@@ -6,15 +6,17 @@ import { Button } from './ui/button';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function Header() {
   const router = useRouter();
   const { toast } = useToast();
+  const user = useAuth();
   
   const handleSignOut = async () => {
     try {
       await auth.signOut();
-      router.push('/auth');
+      router.push('/');
       toast({
         title: 'Signed Out',
         description: 'You have been successfully signed out.',
@@ -28,10 +30,6 @@ export default function Header() {
     }
   };
 
-  const goToAbout = () => {
-    router.push('/about');
-  }
-
   return (
     <header className="py-4 px-4 md:px-6 bg-card border-b sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between">
@@ -41,14 +39,13 @@ export default function Header() {
             DeepSafe
             </h1>
         </div>
-        <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={goToAbout} aria-label="About page">
-                <Info />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label="Sign out">
-                <LogOut />
-            </Button>
-        </div>
+        {user && (
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label="Sign out">
+                    <LogOut />
+                </Button>
+            </div>
+        )}
       </div>
     </header>
   );
