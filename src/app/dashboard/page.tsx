@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import type { AnalyzeDeepfakeOutput } from '@/ai/flows/analyze-deepfake';
 import { runAnalysisAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
@@ -11,10 +10,7 @@ import AnalysisResultDisplay from '@/components/analysis-result-display';
 import HistorySidebar from '@/components/history-sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import Profile from '@/components/profile'; 
-import Settings from '@/components/settings';
+import { User as FirebaseUser } from 'firebase/auth';
 import { addAnalysisToHistory, getAnalysisHistory, clearAnalysisHistory } from '@/lib/firestore';
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
@@ -25,26 +21,17 @@ export type AnalysisResult = AnalyzeDeepfakeOutput & {
   videoDataUri?: string; 
 };
 
-export default function DashboardPage() {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
+interface DashboardPageProps {
+    user: FirebaseUser;
+}
+
+export default function DashboardPage({ user }: DashboardPageProps) {
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
   const { toast } = useToast();
-  const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        router.push('/login');
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
-  
   const fetchHistory = useCallback(async (uid: string) => {
     setIsHistoryLoading(true);
     try {
@@ -150,14 +137,6 @@ export default function DashboardPage() {
     }
   };
   
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background dark">
-        <Skeleton className="h-screen w-full bg-card" />
-      </div>
-    );
-  }
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-8">
