@@ -349,11 +349,6 @@ export default function LoginPage() {
                 <Suspense fallback={<div>Loading...</div>}>
                     <AuthForm />
                 </Suspense>
-                <Button variant="outline" asChild>
-                    <Link href="/">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-                    </Link>
-                </Button>
             </main>
         </div>
     </SidebarProvider>
