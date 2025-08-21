@@ -24,7 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 
@@ -251,10 +251,13 @@ export default function LoginPage() {
             </div>
         </header>
 
-        <main className="flex-1 container mx-auto p-4 md:p-8 flex items-center justify-center">
+        <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center gap-6">
             <Suspense fallback={<div>Loading...</div>}>
                 <AuthForm />
             </Suspense>
+            <Button variant="link" onClick={() => router.push('/')}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+            </Button>
         </main>
     </div>
   );
