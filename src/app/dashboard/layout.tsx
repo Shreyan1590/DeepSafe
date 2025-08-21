@@ -13,7 +13,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full flex-col bg-background dark">
+      <div className="flex min-h-screen w-full flex-col bg-background">
         <div className="flex flex-col flex-1">
           <Header />
           <div className="flex flex-1">
@@ -24,3 +24,5 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
+
+    

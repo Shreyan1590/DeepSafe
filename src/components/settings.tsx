@@ -21,16 +21,41 @@ export default function Settings() {
     setCurrentTheme(themeName);
     const root = window.document.documentElement;
     const theme = themes.find(t => t.name === themeName);
+    
     if (theme) {
+        // Clear all theme classes
+        themes.forEach(t => root.classList.remove(t.name));
+        // Add the new theme class
+        root.classList.add(theme.name);
+        
         Object.entries(theme.cssVars).forEach(([key, value]) => {
             root.style.setProperty(key, value);
         });
         localStorage.setItem('theme', themeName);
+        root.setAttribute('data-theme', themeName);
     }
   };
   
   if (!mounted) {
-    return null; // or a loading skeleton
+    return (
+        <Card className="max-w-2xl mx-auto animate-pulse">
+            <CardHeader>
+                <div className="h-8 w-32 bg-muted rounded"></div>
+                <div className="h-4 w-48 bg-muted rounded mt-2"></div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                 <div className="space-y-4">
+                    <div className="h-6 w-24 bg-muted rounded"></div>
+                    <div className="h-4 w-64 bg-muted rounded"></div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div className="h-40 bg-muted rounded-md"></div>
+                        <div className="h-40 bg-muted rounded-md"></div>
+                        <div className="h-40 bg-muted rounded-md"></div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
   }
 
   return (
@@ -73,3 +98,4 @@ export default function Settings() {
   );
 }
 
+    

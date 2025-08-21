@@ -299,19 +299,18 @@ const AuthForm = () => {
 export default function LoginPage() {
   const router = useRouter();
   const auth = getAuth(app);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Don't auto-redirect, let the form handle the success state
-        // router.push('/dashboard');
-      }
+      // Don't auto-redirect, let the form handle the success state or redirect result
+      setIsCheckingAuth(false);
     });
     return () => unsubscribe();
-  }, [auth, router]);
+  }, [auth]);
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-background dark w-full h-full">
+    <div className="relative flex flex-col min-h-screen bg-background w-full h-full">
         <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2 sm:gap-3">
@@ -325,7 +324,12 @@ export default function LoginPage() {
 
         <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center gap-6">
             <Suspense fallback={<div>Loading...</div>}>
-                <AuthForm />
+                {isCheckingAuth ? 
+                    <div className="flex flex-col items-center justify-center gap-4 p-8">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                        <p className="text-muted-foreground">Loading...</p>
+                    </div> : <AuthForm />
+                }
             </Suspense>
             <Button variant="outline" onClick={() => router.push('/')}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
