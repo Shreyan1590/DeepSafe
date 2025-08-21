@@ -4,45 +4,10 @@
 import { ShieldCheck, LogOut, Languages } from 'lucide-react';
 import { Button } from './ui/button';
 import { auth } from '@/lib/firebase';
-import { useRouter, usePathname } from '@/navigation';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { SidebarTrigger } from './ui/sidebar';
-import { useTranslations, useLocale } from 'next-intl';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-function LanguageSwitcher() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const locale = useLocale();
-
-  const handleLocaleChange = (nextLocale: string) => {
-    router.replace(pathname, {locale: nextLocale});
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Switch language">
-          <Languages />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem onClick={() => handleLocaleChange('en')} disabled={locale === 'en'}>
-          English
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleLocaleChange('hi')} disabled={locale === 'hi'}>
-          हिंदी (Hindi)
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
 
 export default function Header({
     children,
@@ -52,21 +17,20 @@ export default function Header({
   const router = useRouter();
   const { toast } = useToast();
   const user = useAuth();
-  const t = useTranslations('Header');
   
   const handleSignOut = async () => {
     try {
       await auth.signOut();
-      router.push('/login'); // Redirect to login after sign out
+      router.push('/login');
       toast({
-        title: t('signOutSuccess'),
-        description: t('signOutSuccessDesc'),
+        title: "Signed Out",
+        description: "You have been successfully signed out.",
       });
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: t('signOutFailed'),
-        description: t('signOutFailedDesc'),
+        title: "Sign Out Failed",
+        description: "There was an error signing out. Please try again.",
       });
     }
   };
@@ -84,9 +48,8 @@ export default function Header({
             </div>
         </div>
         <div className="flex items-center gap-2">
-            <LanguageSwitcher />
             {user && (
-                <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label={t('signOut')}>
+                <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label={"Sign Out"}>
                     <LogOut />
                 </Button>
             )}

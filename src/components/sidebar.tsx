@@ -21,8 +21,6 @@ import {
     SidebarMenuButton,
     useSidebar,
 } from '@/components/ui/sidebar';
-import { useTranslations } from 'next-intl';
-
 
 interface SidebarProps {
   activeView: string;
@@ -31,12 +29,11 @@ interface SidebarProps {
 
 
 function NavContent({ activeView, setActiveView }: SidebarProps) {
-    const t = useTranslations('DashboardPage');
     const { state } = useSidebar();
     const navItems = [
-      { name: t('dashboard'), view: 'dashboard', icon: LayoutDashboard },
-      { name: t('profile'), view: 'profile', icon: User },
-      { name: t('settings'), view: 'settings', icon: Settings },
+      { name: "Dashboard", view: 'dashboard', icon: LayoutDashboard },
+      { name: "Profile", view: 'profile', icon: User },
+      { name: "Settings", view: 'settings', icon: Settings },
     ];
 
     return (

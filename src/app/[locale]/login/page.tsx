@@ -1,8 +1,8 @@
-
 'use client';
 
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   getAuth,
   onAuthStateChanged,
@@ -14,7 +14,7 @@ import {
   getRedirectResult,
   User,
 } from 'firebase/auth';
-import { app } from '@/lib/firebase'; // Use the initialized app
+import { app } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -38,10 +38,7 @@ import { ShieldCheck, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 import Header from '@/components/header';
-import { Link } from '@/navigation';
-
 
 const AuthForm = () => {
     const [email, setEmail] = useState('');
@@ -55,7 +52,6 @@ const AuthForm = () => {
     const auth = getAuth(app);
     const isMobile = useIsMobile();
     const [activeTab, setActiveTab] = useState('login');
-    const t = useTranslations('LoginPage');
 
     const handleAuthSuccess = useCallback((user: User) => {
         setWelcomeUser(user);
@@ -68,34 +64,34 @@ const AuthForm = () => {
     }
 
     const handleAuthError = useCallback((err: any, context: 'login' | 'signup') => {
-        let message = t('errorUnknown');
+        let message = "An unknown error occurred.";
         if (err.code) {
             switch (err.code) {
                 case "auth/wrong-password":
                 case "auth/invalid-credential":
                      if (context === 'login') {
-                        message = t('errorNoUser');
-                        setActiveTab('signup'); // Switch to signup tab
+                        message = "No user found with this email. Please sign up first.";
+                        setActiveTab('signup');
                      } else {
-                        message = t('errorWrongPassword');
+                        message = "Incorrect email or password. Please try again.";
                      }
                     break;
                 case "auth/user-not-found":
-                    message = t('errorNoUser');
-                    setActiveTab('signup'); // Switch to signup tab
+                    message = "No user found with this email. Please sign up first.";
+                    setActiveTab('signup');
                     break;
                 case "auth/email-already-in-use":
-                    message = t('errorEmailInUse');
-                    setActiveTab('login'); // Switch to login tab
+                    message = "This email is already registered. Please log in.";
+                    setActiveTab('login');
                     break;
                 case "auth/popup-closed-by-user":
-                    message = t('errorPopupClosed');
+                    message = "Sign-in popup closed. Please try again.";
                     break;
                 case "auth/cancelled-popup-request":
-                    return; // Do nothing, user intentionally closed it.
+                    return;
                 case "auth/auth-domain-config-required":
                 case "auth/unauthorized-domain":
-                     message = t('errorUnauthorizedDomain');
+                     message = "This domain is not authorized for authentication.";
                      break;
                 default:
                     message = err.message;
@@ -106,10 +102,10 @@ const AuthForm = () => {
         setError(message);
         toast({
             variant: "destructive",
-            title: t('authFailed'),
+            title: "Authentication Failed",
             description: message,
         });
-    }, [toast, t]);
+    }, [toast]);
 
     useEffect(() => {
         const processRedirectResult = async () => {
@@ -132,7 +128,7 @@ const AuthForm = () => {
     const handleEmailPasswordSignUp = async () => {
         setError(null);
         if (password.length < 6) {
-            setError(t('passwordMinLength'));
+            setError("Password must be at least 6 characters long.");
             return;
         }
         try {
@@ -172,7 +168,7 @@ const AuthForm = () => {
         return (
             <div className="flex flex-col items-center justify-center gap-4 p-8">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-muted-foreground">{t('signingIn')}</p>
+                <p className="text-muted-foreground">Signing in...</p>
             </div>
         )
     }
@@ -186,8 +182,8 @@ const AuthForm = () => {
         <>
          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md overflow-hidden">
             <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">{t('login')}</TabsTrigger>
-                <TabsTrigger value="signup">{t('signup')}</TabsTrigger>
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
             <motion.div
                  key={activeTab}
@@ -200,14 +196,14 @@ const AuthForm = () => {
                 <TabsContent value="login" forceMount>
                     <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <CardHeader>
-                        <CardTitle>{t('login')}</CardTitle>
+                        <CardTitle>Login</CardTitle>
                         <CardDescription>
-                        {t('accessAccount')}
+                        Access your account to continue.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
-                        <Label htmlFor="login-email">{t('emailLabel')}</Label>
+                        <Label htmlFor="login-email">Email</Label>
                         <Input
                             id="login-email"
                             type="email"
@@ -218,7 +214,7 @@ const AuthForm = () => {
                         />
                         </div>
                         <div className="space-y-2">
-                        <Label htmlFor="login-password">{t('passwordLabel')}</Label>
+                        <Label htmlFor="login-password">Password</Label>
                         <Input
                             id="login-password"
                             type="password"
@@ -229,7 +225,7 @@ const AuthForm = () => {
                         </div>
                         {error && <p className="text-destructive text-sm">{error}</p>}
                         <Button onClick={handleEmailPasswordLogin} className="w-full">
-                        {t('loginWithEmail')}
+                        Login with Email
                         </Button>
                         <div className="relative my-4">
                             <div className="absolute inset-0 flex items-center">
@@ -237,12 +233,12 @@ const AuthForm = () => {
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
                                 <span className="bg-card px-2 text-muted-foreground">
-                                {t('orContinueWith')}
+                                Or continue with
                                 </span>
                             </div>
                         </div>
                         <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-                        {t('signInWithGoogle')}
+                        Sign In with Google
                         </Button>
                     </CardContent>
                     </Card>
@@ -250,14 +246,14 @@ const AuthForm = () => {
                 <TabsContent value="signup" forceMount>
                     <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
                     <CardHeader>
-                        <CardTitle>{t('signup')}</CardTitle>
+                        <CardTitle>Sign Up</CardTitle>
                         <CardDescription>
-                        {t('createAccount')}
+                        Create an account to get started.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
-                        <Label htmlFor="signup-email">{t('emailLabel')}</Label>
+                        <Label htmlFor="signup-email">Email</Label>
                         <Input
                             id="signup-email"
                             type="email"
@@ -268,7 +264,7 @@ const AuthForm = () => {
                         />
                         </div>
                         <div className="space-y-2">
-                        <Label htmlFor="signup-password">{t('passwordLabel')}</Label>
+                        <Label htmlFor="signup-password">Password</Label>
                         <Input
                             id="signup-password"
                             type="password"
@@ -279,7 +275,7 @@ const AuthForm = () => {
                         </div>
                         {error && <p className="text-destructive text-sm">{error}</p>}
                         <Button onClick={handleEmailPasswordSignUp} className="w-full">
-                        {t('signUpWithEmail')}
+                        Sign Up with Email
                         </Button>
                         <div className="relative my-4">
                             <div className="absolute inset-0 flex items-center">
@@ -287,12 +283,12 @@ const AuthForm = () => {
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
                                 <span className="bg-card px-2 text-muted-foreground">
-                                {t('orContinueWith')}
+                                Or continue with
                                 </span>
                             </div>
                         </div>
                         <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
-                        {t('signUpWithGoogle')}
+                        Sign Up with Google
                         </Button>
                     </CardContent>
                     </Card>
@@ -302,13 +298,13 @@ const AuthForm = () => {
         <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle className="text-center text-2xl">{t('welcome')}</DialogTitle>
+                    <DialogTitle className="text-center text-2xl">Welcome!</DialogTitle>
                     <DialogDescription className="text-center text-lg">
                         {welcomeUser?.email}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button onClick={handleContinueToDashboard} className="w-full">{t('continue')}</Button>
+                    <Button onClick={handleContinueToDashboard} className="w-full">Continue</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -320,11 +316,9 @@ export default function LoginPage() {
   const router = useRouter();
   const auth = getAuth(app);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const t = useTranslations('LoginPage');
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // Don't auto-redirect, let the form handle the success state or redirect result
       setIsCheckingAuth(false);
     });
     return () => unsubscribe();
@@ -334,17 +328,17 @@ export default function LoginPage() {
     <div className="relative flex flex-col min-h-screen bg-background w-full h-full">
         <Header />
         <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center gap-6">
-            <Suspense fallback={<div>{t('loading')}</div>}>
+            <Suspense fallback={<div>Loading...</div>}>
                 {isCheckingAuth ? 
                     <div className="flex flex-col items-center justify-center gap-4 p-8">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                        <p className="text-muted-foreground">{t('loading')}</p>
+                        <p className="text-muted-foreground">Loading...</p>
                     </div> : <AuthForm />
                 }
             </Suspense>
             <Button variant="outline" asChild>
                 <Link href="/">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> {t('backToHome')}
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
                 </Link>
             </Button>
         </main>

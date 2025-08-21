@@ -1,228 +1,347 @@
-
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { AnalyzeDeepfakeOutput } from '@/ai/flows/analyze-deepfake';
-import { runAnalysisAction } from '@/app/actions';
+import Link from 'next/link';
+import {
+  getAuth,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  User,
+} from 'firebase/auth';
+import { app } from '@/lib/firebase';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ShieldCheck, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import VideoUploader from '@/components/video-uploader';
-import AnalysisResultDisplay from '@/components/analysis-result-display';
-import HistorySidebar from '@/components/history-sidebar';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import Profile from '@/components/profile'; 
-import Settings from '@/components/settings';
-import { addAnalysisToHistory, getAnalysisHistory, clearAnalysisHistory } from '@/lib/firestore';
-import Sidebar from '@/components/sidebar';
-import { LayoutDashboard, Settings as SettingsIcon, User as UserIcon } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { motion } from 'framer-motion';
+import Header from '@/components/header';
 
+const AuthForm = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [showWelcome, setShowWelcome] = useState(false);
+    const [welcomeUser, setWelcomeUser] = useState<User | null>(null);
+    const router = useRouter();
+    const { toast } = useToast();
+    const auth = getAuth(app);
+    const isMobile = useIsMobile();
+    const [activeTab, setActiveTab] = useState('login');
 
-export type AnalysisResult = AnalyzeDeepfakeOutput & {
-  id: string;
-  filename: string;
-  timestamp: string;
-  videoPreviewUrl: string;
-  videoDataUri?: string; 
-};
-
-export default function DashboardPage() {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [history, setHistory] = useState<AnalysisResult[]>([]);
-  const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isHistoryLoading, setIsHistoryLoading] = useState(true);
-  const [activeView, setActiveView] = useState('dashboard');
-  const { toast } = useToast();
-  const router = useRouter();
-  const t = useTranslations('DashboardPage');
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        router.push('/login');
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
-  
-  const fetchHistory = useCallback(async (uid: string) => {
-    setIsHistoryLoading(true);
-    try {
-      const userHistory = await getAnalysisHistory(uid);
-      setHistory(userHistory);
-    } catch (error) {
-      console.error('Failed to load history from Firestore', error);
-      toast({
-        variant: 'destructive',
-        title: t('historyError'),
-        description: t('historyErrorDesc'),
-      });
-    } finally {
-      setIsHistoryLoading(false);
+    const handleAuthSuccess = useCallback((user: User) => {
+        setWelcomeUser(user);
+        setShowWelcome(true);
+    }, []);
+    
+    const handleContinueToDashboard = () => {
+        setShowWelcome(false);
+        router.push('/dashboard');
     }
-  }, [toast, t]);
 
-  useEffect(() => {
-    if (user) {
-      fetchHistory(user.uid);
-    }
-  }, [user, fetchHistory]);
-
-  const handleAnalysis = async (file: File) => {
-    if (!user) {
-      toast({ variant: 'destructive', title: t('authError'), description: t('authErrorDesc') });
-      return;
-    }
-    setIsLoading(true);
-    setCurrentAnalysis(null);
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      const videoDataUri = reader.result as string;
-
-      try {
-        const result = await runAnalysisAction(videoDataUri);
-        
-        if ('error' in result) {
-            throw new Error(result.error);
+    const handleAuthError = useCallback((err: any, context: 'login' | 'signup') => {
+        let message = "An unknown error occurred.";
+        if (err.code) {
+            switch (err.code) {
+                case "auth/wrong-password":
+                case "auth/invalid-credential":
+                     if (context === 'login') {
+                        message = "No user found with this email. Please sign up first.";
+                        setActiveTab('signup');
+                     } else {
+                        message = "Incorrect email or password. Please try again.";
+                     }
+                    break;
+                case "auth/user-not-found":
+                    message = "No user found with this email. Please sign up first.";
+                    setActiveTab('signup');
+                    break;
+                case "auth/email-already-in-use":
+                    message = "This email is already registered. Please log in.";
+                    setActiveTab('login');
+                    break;
+                case "auth/popup-closed-by-user":
+                    message = "Sign-in popup closed. Please try again.";
+                    break;
+                case "auth/cancelled-popup-request":
+                    return;
+                case "auth/auth-domain-config-required":
+                case "auth/unauthorized-domain":
+                     message = "This domain is not authorized for authentication.";
+                     break;
+                default:
+                    message = err.message;
+            }
+        } else {
+          message = err.message;
         }
+        setError(message);
+        toast({
+            variant: "destructive",
+            title: "Authentication Failed",
+            description: message,
+        });
+    }, [toast]);
 
-        const newAnalysis: Omit<AnalysisResult, 'id' | 'timestamp'> = {
-          ...result,
-          filename: file.name,
-          videoPreviewUrl: URL.createObjectURL(file),
-          videoDataUri: videoDataUri, 
+    useEffect(() => {
+        const processRedirectResult = async () => {
+            setIsProcessing(true);
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    handleAuthSuccess(result.user);
+                }
+            } catch (err: any) {
+                handleAuthError(err, 'login');
+            } finally {
+                setIsProcessing(false);
+            }
         };
+        processRedirectResult();
+    }, [auth, handleAuthSuccess, handleAuthError]);
 
-        const newId = await addAnalysisToHistory(user.uid, newAnalysis);
-        
-        const finalAnalysis: AnalysisResult = {
-          ...newAnalysis,
-          id: newId,
-          timestamp: new Date().toISOString(),
+
+    const handleEmailPasswordSignUp = async () => {
+        setError(null);
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters long.");
+            return;
         }
-
-        setCurrentAnalysis(finalAnalysis);
-        setHistory(prev => [finalAnalysis, ...prev]);
-
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-        toast({
-          variant: 'destructive',
-          title: t('analysisFailed'),
-          description: errorMessage,
-        });
-      } finally {
-        setIsLoading(false);
-      }
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            handleAuthSuccess(userCredential.user);
+        } catch (err: any) {
+            handleAuthError(err, 'signup');
+        }
     };
-    reader.onerror = () => {
-        toast({
-            variant: 'destructive',
-            title: t('fileReadError'),
-            description: t('fileReadErrorDesc'),
-        });
-        setIsLoading(false);
+
+    const handleEmailPasswordLogin = async () => {
+        setError(null);
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            handleAuthSuccess(userCredential.user);
+        } catch (err: any) {
+            handleAuthError(err, 'login');
+        }
     };
-  };
 
-  const handleSelectHistory = (result: AnalysisResult) => {
-    setCurrentAnalysis(result);
-  };
-
-  const handleClearHistory = async () => {
-    if (!user) return;
-    try {
-        await clearAnalysisHistory(user.uid);
-        setHistory([]);
-        setCurrentAnalysis(null);
-        toast({
-            title: t('historyCleared'),
-            description: t('historyClearedDesc'),
-        })
-    } catch(error) {
-         toast({
-            variant: 'destructive',
-            title: t('historyError'),
-            description: t('clearHistoryErrorDesc'),
-        })
-    }
-  };
-  
-  const renderContent = () => {
-    switch (activeView) {
-      case 'profile':
-        return <Profile user={user!} />;
-      case 'settings':
-        return <Settings />;
-      case 'dashboard':
-      default:
+    const handleGoogleSignIn = async () => {
+        setError(null);
+        const provider = new GoogleAuthProvider();
+        try {
+            if (isMobile) {
+                await signInWithRedirect(auth, provider);
+            } else {
+                const userCredential = await signInWithPopup(auth, provider);
+                handleAuthSuccess(userCredential.user);
+            }
+        } catch (err: any) {
+            handleAuthError(err, 'login');
+        }
+    };
+    
+    if (isProcessing) {
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-2 space-y-8">
-              <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
-              {isLoading && <LoadingSkeleton />}
-              {currentAnalysis && <AnalysisResultDisplay result={currentAnalysis} />}
+            <div className="flex flex-col items-center justify-center gap-4 p-8">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-muted-foreground">Signing in...</p>
             </div>
-            <div className="lg:col-span-1">
-              <HistorySidebar
-                history={history}
-                onSelect={handleSelectHistory}
-                onClear={handleClearHistory}
-                currentAnalysisId={currentAnalysis?.id}
-                isLoading={isHistoryLoading}
-              />
-            </div>
-          </div>
-        );
+        )
     }
-  }
 
-  if (!user) {
+    const variants = {
+        hidden: { x: activeTab === 'login' ? '-100%' : '100%', opacity: 0 },
+        visible: { x: 0, opacity: 1 },
+    };
+
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background dark">
-        <Skeleton className="h-screen w-full bg-card" />
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <Sidebar activeView={activeView} setActiveView={setActiveView} />
-      <main className="flex-1 p-4 sm:p-6 md:p-8">
-        {renderContent()}
-      </main>
-    </>
-  );
+        <>
+         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md overflow-hidden">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            </TabsList>
+            <motion.div
+                 key={activeTab}
+                 initial="hidden"
+                 animate="visible"
+                 exit="hidden"
+                 variants={variants}
+                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+                <TabsContent value="login" forceMount>
+                    <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
+                    <CardHeader>
+                        <CardTitle>Login</CardTitle>
+                        <CardDescription>
+                        Access your account to continue.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                        <Label htmlFor="login-email">Email</Label>
+                        <Input
+                            id="login-email"
+                            type="email"
+                            placeholder="m@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                        </div>
+                        <div className="space-y-2">
+                        <Label htmlFor="login-password">Password</Label>
+                        <Input
+                            id="login-password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        </div>
+                        {error && <p className="text-destructive text-sm">{error}</p>}
+                        <Button onClick={handleEmailPasswordLogin} className="w-full">
+                        Login with Email
+                        </Button>
+                        <div className="relative my-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-card px-2 text-muted-foreground">
+                                Or continue with
+                                </span>
+                            </div>
+                        </div>
+                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
+                        Sign In with Google
+                        </Button>
+                    </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="signup" forceMount>
+                    <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
+                    <CardHeader>
+                        <CardTitle>Sign Up</CardTitle>
+                        <CardDescription>
+                        Create an account to get started.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                        <Label htmlFor="signup-email">Email</Label>
+                        <Input
+                            id="signup-email"
+                            type="email"
+                            placeholder="m@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                        </div>
+                        <div className="space-y-2">
+                        <Label htmlFor="signup-password">Password</Label>
+                        <Input
+                            id="signup-password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        </div>
+                        {error && <p className="text-destructive text-sm">{error}</p>}
+                        <Button onClick={handleEmailPasswordSignUp} className="w-full">
+                        Sign Up with Email
+                        </Button>
+                        <div className="relative my-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-card px-2 text-muted-foreground">
+                                Or continue with
+                                </span>
+                            </div>
+                        </div>
+                        <Button variant="outline" onClick={handleGoogleSignIn} className="w-full">
+                        Sign Up with Google
+                        </Button>
+                    </CardContent>
+                    </Card>
+                </TabsContent>
+            </motion.div>
+        </Tabs>
+        <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle className="text-center text-2xl">Welcome!</DialogTitle>
+                    <DialogDescription className="text-center text-lg">
+                        {welcomeUser?.email}
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button onClick={handleContinueToDashboard} className="w-full">Continue</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+       </>
+    )
 }
 
-function LoadingSkeleton() {
-    return (
-      <Card className="bg-card/50 border-border/50">
-        <CardContent className="p-6">
-          <div className="space-y-6 animate-pulse">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <Skeleton className="h-8 w-2/3 sm:w-1/3 bg-muted" />
-                <Skeleton className="h-8 w-32 sm:w-24 bg-muted" />
-            </div>
-            <div className="space-y-4">
-                <Skeleton className="h-6 w-1/2 sm:w-1/4 bg-muted" />
-                <Skeleton className="h-10 w-full bg-muted" />
-            </div>
-            <div className="space-y-2">
-                <Skeleton className="h-4 w-full bg-muted" />
-                <Skeleton className="h-4 w-full bg-muted" />
-                <Skeleton className="h-4 w-3/4 bg-muted" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+export default function LoginPage() {
+  const router = useRouter();
+  const auth = getAuth(app);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsCheckingAuth(false);
+    });
+    return () => unsubscribe();
+  }, [auth]);
+
+  return (
+    <div className="relative flex flex-col min-h-screen bg-background w-full h-full">
+        <Header />
+        <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center gap-6">
+            <Suspense fallback={<div>Loading...</div>}>
+                {isCheckingAuth ? 
+                    <div className="flex flex-col items-center justify-center gap-4 p-8">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                        <p className="text-muted-foreground">Loading...</p>
+                    </div> : <AuthForm />
+                }
+            </Suspense>
+            <Button variant="outline" asChild>
+                <Link href="/">
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+                </Link>
+            </Button>
+        </main>
+    </div>
+  );
 }

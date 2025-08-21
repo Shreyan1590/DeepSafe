@@ -6,7 +6,6 @@ import { UploadCloud, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useTranslations } from 'next-intl';
 
 interface VideoUploaderProps {
   onAnalyze: (file: File) => void;
@@ -19,22 +18,21 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const t = useTranslations('VideoUploader');
 
   const handleFileValidation = (file: File): boolean => {
     if (!file.type.startsWith('video/')) {
         toast({
             variant: 'destructive',
-            title: t('invalidFileType'),
-            description: t('invalidFileTypeDesc'),
+            title: "Invalid File Type",
+            description: "Please upload a valid video file.",
         });
         return false;
     }
     if (file.size > MAX_FILE_SIZE) {
         toast({
             variant: 'destructive',
-            title: t('fileTooLarge'),
-            description: t('fileTooLargeDesc'),
+            title: "File Too Large",
+            description: "Please upload a video smaller than 10GB.",
         });
         return false;
     }
@@ -81,8 +79,8 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
   return (
     <Card className="bg-card/50 border-border/50">
       <CardHeader>
-        <CardTitle className="font-headline text-xl sm:text-2xl">{t('uploadVideo')}</CardTitle>
-        <CardDescription className="text-muted-foreground text-sm sm:text-base">{t('uploadVideoDesc')}</CardDescription>
+        <CardTitle className="font-headline text-xl sm:text-2xl">Upload Video</CardTitle>
+        <CardDescription className="text-muted-foreground text-sm sm:text-base">Drag & drop a video file or click to select one for deepfake analysis.</CardDescription>
       </CardHeader>
       <CardContent>
         <div
@@ -106,18 +104,18 @@ export default function VideoUploader({ onAnalyze, isLoading }: VideoUploaderPro
           {isLoading ? (
             <div className="flex flex-col items-center gap-4 text-center">
               <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin" />
-              <p className="font-semibold text-base sm:text-lg text-primary">{t('analyzing')}</p>
-              <p className="text-muted-foreground text-sm">{t('analyzingDesc')}</p>
+              <p className="font-semibold text-base sm:text-lg text-primary">Analyzing Video...</p>
+              <p className="text-muted-foreground text-sm">This may take a moment. Please don't close this page.</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-4 text-center">
               <UploadCloud className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground transition-colors group-hover:text-primary" />
-              <p className="font-semibold text-base sm:text-lg">{t('dragAndDrop')}</p>
-              <p className="text-muted-foreground text-sm">{t('or')}</p>
+              <p className="font-semibold text-base sm:text-lg">Drag & drop your video here</p>
+              <p className="text-muted-foreground text-sm">or</p>
               <Button variant="outline" size="lg" disabled={isLoading}>
-                {t('browseFiles')}
+                Browse Files
               </Button>
-               <p className="text-xs text-muted-foreground mt-4">{t('maxFileSize')}</p>
+               <p className="text-xs text-muted-foreground mt-4">Max file size: 10GB</p>
             </div>
           )}
         </div>

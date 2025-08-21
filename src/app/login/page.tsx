@@ -3,6 +3,7 @@
 
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   getAuth,
   onAuthStateChanged,
@@ -14,7 +15,7 @@ import {
   getRedirectResult,
   User,
 } from 'firebase/auth';
-import { app } from '@/lib/firebase'; // Use the initialized app
+import { app } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -37,9 +38,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShieldCheck, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
-
+import Header from '@/components/header';
 
 const AuthForm = () => {
     const [email, setEmail] = useState('');
@@ -72,24 +72,24 @@ const AuthForm = () => {
                 case "auth/invalid-credential":
                      if (context === 'login') {
                         message = "No user found with this email. Please sign up first.";
-                        setActiveTab('signup'); // Switch to signup tab
+                        setActiveTab('signup');
                      } else {
                         message = "Incorrect email or password. Please try again.";
                      }
                     break;
                 case "auth/user-not-found":
                     message = "No user found with this email. Please sign up first.";
-                    setActiveTab('signup'); // Switch to signup tab
+                    setActiveTab('signup');
                     break;
                 case "auth/email-already-in-use":
                     message = "This email is already registered. Please log in.";
-                    setActiveTab('login'); // Switch to login tab
+                    setActiveTab('login');
                     break;
                 case "auth/popup-closed-by-user":
                     message = "Sign-in popup closed. Please try again.";
                     break;
                 case "auth/cancelled-popup-request":
-                    return; // Do nothing, user intentionally closed it.
+                    return;
                 case "auth/auth-domain-config-required":
                 case "auth/unauthorized-domain":
                      message = "This domain is not authorized for authentication.";
@@ -320,7 +320,6 @@ export default function LoginPage() {
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // Don't auto-redirect, let the form handle the success state or redirect result
       setIsCheckingAuth(false);
     });
     return () => unsubscribe();
@@ -328,17 +327,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background w-full h-full">
-        <header className="py-4 px-4 md:px-6 bg-transparent sticky top-0 z-50">
-            <div className="container mx-auto flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-2 sm:gap-3">
-                    <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
-                    <h1 className="text-xl sm:text-2xl font-headline font-bold text-foreground">
-                    DeepSafe
-                    </h1>
-                </Link>
-            </div>
-        </header>
-
+        <Header />
         <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center gap-6">
             <Suspense fallback={<div>Loading...</div>}>
                 {isCheckingAuth ? 
@@ -348,12 +337,12 @@ export default function LoginPage() {
                     </div> : <AuthForm />
                 }
             </Suspense>
-            <Button variant="outline" onClick={() => router.push('/')}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+            <Button variant="outline" asChild>
+                <Link href="/">
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+                </Link>
             </Button>
         </main>
     </div>
   );
 }
-
-    
