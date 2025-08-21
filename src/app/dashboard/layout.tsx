@@ -1,23 +1,28 @@
+
 'use client';
 
 import Header from '@/components/header';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import type { ReactNode } from 'react';
+import Sidebar from '@/components/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { useState } from 'react';
 
 export default function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  const [activeView, setActiveView] = useState('dashboard');
 
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col bg-background">
-        <div className="flex flex-col flex-1">
-          <Header />
-          <div className="flex flex-1">
-             {children}
-          </div>
+        <Header />
+        <div className="flex flex-1">
+          <Sidebar activeView={activeView} setActiveView={setActiveView} />
+          <main className="flex-1 p-4 sm:p-6 md:p-8">
+            {children}
+          </main>
         </div>
       </div>
     </SidebarProvider>

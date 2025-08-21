@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -15,9 +16,6 @@ import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import Profile from '@/components/profile'; 
 import Settings from '@/components/settings';
 import { addAnalysisToHistory, getAnalysisHistory, clearAnalysisHistory } from '@/lib/firestore';
-import Sidebar from '@/components/sidebar';
-import { LayoutDashboard, Settings as SettingsIcon, User as UserIcon } from 'lucide-react';
-
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
   id: string;
@@ -33,7 +31,6 @@ export default function DashboardPage() {
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
-  const [activeView, setActiveView] = useState('dashboard');
   const { toast } = useToast();
   const router = useRouter();
 
@@ -153,35 +150,6 @@ export default function DashboardPage() {
     }
   };
   
-  const renderContent = () => {
-    switch (activeView) {
-      case 'profile':
-        return <Profile user={user!} />;
-      case 'settings':
-        return <Settings />;
-      case 'dashboard':
-      default:
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-2 space-y-8">
-              <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
-              {isLoading && <LoadingSkeleton />}
-              {currentAnalysis && <AnalysisResultDisplay result={currentAnalysis} />}
-            </div>
-            <div className="lg:col-span-1">
-              <HistorySidebar
-                history={history}
-                onSelect={handleSelectHistory}
-                onClear={handleClearHistory}
-                currentAnalysisId={currentAnalysis?.id}
-                isLoading={isHistoryLoading}
-              />
-            </div>
-          </div>
-        );
-    }
-  }
-
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background dark">
@@ -191,12 +159,22 @@ export default function DashboardPage() {
   }
 
   return (
-    <>
-      <Sidebar activeView={activeView} setActiveView={setActiveView} />
-      <main className="flex-1 p-4 sm:p-6 md:p-8">
-        {renderContent()}
-      </main>
-    </>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-2 space-y-8">
+            <VideoUploader onAnalyze={handleAnalysis} isLoading={isLoading} />
+            {isLoading && <LoadingSkeleton />}
+            {currentAnalysis && <AnalysisResultDisplay result={currentAnalysis} />}
+        </div>
+        <div className="lg:col-span-1">
+            <HistorySidebar
+            history={history}
+            onSelect={handleSelectHistory}
+            onClear={handleClearHistory}
+            currentAnalysisId={currentAnalysis?.id}
+            isLoading={isHistoryLoading}
+            />
+        </div>
+    </div>
   );
 }
 

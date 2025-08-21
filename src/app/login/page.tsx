@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, Suspense, useCallback } from 'react';
@@ -39,6 +40,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
 import Header from '@/components/header';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 const AuthForm = () => {
     const [email, setEmail] = useState('');
@@ -325,23 +327,25 @@ export default function LoginPage() {
   }, [auth]);
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-background w-full h-full">
-        <Header />
-        <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center gap-6">
-            <Suspense fallback={<div>Loading...</div>}>
-                {isCheckingAuth ? 
-                    <div className="flex flex-col items-center justify-center gap-4 p-8">
-                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                        <p className="text-muted-foreground">Loading...</p>
-                    </div> : <AuthForm />
-                }
-            </Suspense>
-            <Button variant="outline" asChild>
-                <Link href="/">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-                </Link>
-            </Button>
-        </main>
-    </div>
+    <SidebarProvider>
+        <div className="relative flex flex-col min-h-screen bg-background w-full h-full">
+            <Header />
+            <main className="flex-1 container mx-auto p-4 md:p-8 flex flex-col items-center justify-center gap-6">
+                <Suspense fallback={<div>Loading...</div>}>
+                    {isCheckingAuth ? 
+                        <div className="flex flex-col items-center justify-center gap-4 p-8">
+                            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                            <p className="text-muted-foreground">Loading...</p>
+                        </div> : <AuthForm />
+                    }
+                </Suspense>
+                <Button variant="outline" asChild>
+                    <Link href="/">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+                    </Link>
+                </Button>
+            </main>
+        </div>
+    </SidebarProvider>
   );
 }

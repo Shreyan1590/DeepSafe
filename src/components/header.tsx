@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ShieldCheck, LogOut, Languages } from 'lucide-react';
@@ -7,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { SidebarTrigger } from './ui/sidebar';
+import Link from 'next/link';
 
 export default function Header({
     children,
@@ -39,12 +41,12 @@ export default function Header({
       <div className="container mx-auto flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
             <SidebarTrigger />
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/')}>
+            <Link href="/" className="flex items-center gap-3 cursor-pointer">
                 <ShieldCheck className="h-8 w-8 text-primary" />
                 <h1 className="text-2xl font-headline font-bold text-foreground hidden sm:block">
                 DeepSafe
                 </h1>
-            </div>
+            </Link>
         </div>
         <div className="flex items-center gap-2">
             {user && (
