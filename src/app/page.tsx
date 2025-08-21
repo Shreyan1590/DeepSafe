@@ -1,6 +1,8 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import type { AnalyzeDeepfakeOutput } from '@/ai/flows/analyze-deepfake';
 import { runAnalysisAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +12,8 @@ import AnalysisResultDisplay from '@/components/analysis-result-display';
 import HistorySidebar from '@/components/history-sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 export type AnalysisResult = AnalyzeDeepfakeOutput & {
   id: string;
@@ -19,26 +23,41 @@ export type AnalysisResult = AnalyzeDeepfakeOutput & {
 };
 
 export default function Home() {
+  const [user, setUser] = useState<User | null>(null);
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        router.push('/auth');
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
+  
+  useEffect(() => {
+    if (!user) return;
     try {
-      const storedHistory = localStorage.getItem('deepsafed-history');
+      const storedHistory = localStorage.getItem(`deepsafed-history-${user.uid}`);
       if (storedHistory) {
         setHistory(JSON.parse(storedHistory));
       }
     } catch (error) {
       console.error('Failed to load history from localStorage', error);
     }
-  }, []);
+  }, [user]);
 
   const updateHistory = (newHistory: AnalysisResult[]) => {
+    if (!user) return;
     setHistory(newHistory);
     try {
-      localStorage.setItem('deepsafed-history', JSON.stringify(newHistory));
+      localStorage.setItem(`deepsafed-history-${user.uid}`, JSON.stringify(newHistory));
     } catch (error) {
       console.error('Failed to save history to localStorage', error);
     }
@@ -103,6 +122,14 @@ export default function Home() {
         description: 'Your analysis history has been removed.',
     })
   };
+  
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Skeleton className="h-screen w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background dark:bg-background">

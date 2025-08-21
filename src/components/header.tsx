@@ -1,13 +1,54 @@
-import { ShieldCheck } from 'lucide-react';
+
+'use client';
+
+import { ShieldCheck, LogOut, Info } from 'lucide-react';
+import { Button } from './ui/button';
+import { auth } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Header() {
+  const router = useRouter();
+  const { toast } = useToast();
+  
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      router.push('/auth');
+      toast({
+        title: 'Signed Out',
+        description: 'You have been successfully signed out.',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign Out Failed',
+        description: 'There was an error signing out. Please try again.',
+      });
+    }
+  };
+
+  const goToAbout = () => {
+    router.push('/about');
+  }
+
   return (
     <header className="py-4 px-4 md:px-6 bg-card border-b sticky top-0 z-50">
-      <div className="container mx-auto flex items-center gap-3">
-        <ShieldCheck className="h-7 w-7 md:h-8 md:w-8 text-primary" />
-        <h1 className="text-xl md:text-2xl font-headline font-bold text-foreground">
-          DeepSafe
-        </h1>
+      <div className="container mx-auto flex items-center justify-between">
+        <div className="flex items-center gap-3">
+            <ShieldCheck className="h-7 w-7 md:h-8 md:w-8 text-primary" />
+            <h1 className="text-xl md:text-2xl font-headline font-bold text-foreground">
+            DeepSafe
+            </h1>
+        </div>
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={goToAbout} aria-label="About page">
+                <Info />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label="Sign out">
+                <LogOut />
+            </Button>
+        </div>
       </div>
     </header>
   );
