@@ -40,6 +40,7 @@ const AuthForm = () => {
     const { toast } = useToast();
     const auth = getAuth(app);
     const isMobile = useIsMobile();
+    const [activeTab, setActiveTab] = useState('login');
 
     const handleAuthSuccess = useCallback((user: User) => {
         router.push('/dashboard');
@@ -49,19 +50,25 @@ const AuthForm = () => {
         });
     }, [router, toast]);
 
-    const handleAuthError = useCallback((err: any) => {
+    const handleAuthError = useCallback((err: any, context: 'login' | 'signup') => {
         let message = "An unknown error occurred.";
         if (err.code) {
             switch (err.code) {
                 case "auth/wrong-password":
                 case "auth/invalid-credential":
-                    message = "Incorrect email or password. Please try again.";
+                     if (context === 'login') {
+                        message = "Incorrect email or password. If you don't have an account, please sign up.";
+                     } else {
+                        message = "Incorrect email or password. Please try again.";
+                     }
                     break;
                 case "auth/user-not-found":
-                    message = "No user found with this email. Please sign up.";
+                    message = "No user found with this email. Please sign up first.";
+                    setActiveTab('signup'); // Switch to signup tab
                     break;
                 case "auth/email-already-in-use":
                     message = "This email is already registered. Please log in.";
+                    setActiveTab('login'); // Switch to login tab
                     break;
                 case "auth/popup-closed-by-user":
                     message = "Sign-in popup closed. Please try again.";
@@ -95,7 +102,7 @@ const AuthForm = () => {
                     handleAuthSuccess(result.user);
                 }
             } catch (err: any) {
-                handleAuthError(err);
+                handleAuthError(err, 'login');
             } finally {
                 setIsProcessing(false);
             }
@@ -114,7 +121,7 @@ const AuthForm = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             handleAuthSuccess(userCredential.user);
         } catch (err: any) {
-            handleAuthError(err);
+            handleAuthError(err, 'signup');
         }
     };
 
@@ -124,7 +131,7 @@ const AuthForm = () => {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             handleAuthSuccess(userCredential.user);
         } catch (err: any) {
-            handleAuthError(err);
+            handleAuthError(err, 'login');
         }
     };
 
@@ -139,7 +146,7 @@ const AuthForm = () => {
                 handleAuthSuccess(userCredential.user);
             }
         } catch (err: any) {
-            handleAuthError(err);
+            handleAuthError(err, 'login');
         }
     };
     
@@ -153,7 +160,7 @@ const AuthForm = () => {
     }
 
     return (
-         <Tabs defaultValue="login" className="w-full max-w-md">
+         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
