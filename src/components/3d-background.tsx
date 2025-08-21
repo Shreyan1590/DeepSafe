@@ -4,12 +4,24 @@
 import { useState, useRef, Suspense } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Points, PointMaterial } from '@react-three/drei'
-// @ts-ignore
-import * as random from 'maath/random/dist/maath-random.esm'
 
 function Stars(props: any) {
   const ref = useRef<any>()
-  const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.2 }))
+  
+  const [sphere] = useState(() => {
+    const positions = new Float32Array(5000 * 3);
+    for (let i = 0; i < 5000; i++) {
+      const i3 = i * 3;
+      const r = Math.random() * 2 + 0.5;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const theta = 2 * Math.PI * Math.random();
+      positions[i3] = r * Math.cos(theta) * Math.sin(phi);
+      positions[i3 + 1] = r * Math.sin(theta) * Math.sin(phi);
+      positions[i3 + 2] = r * Math.cos(phi);
+    }
+    return positions;
+  });
+
 
   useFrame((state, delta) => {
     if (ref.current) {
