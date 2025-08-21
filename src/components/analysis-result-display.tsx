@@ -62,18 +62,12 @@ export default function AnalysisResultDisplay({ result }: AnalysisResultDisplayP
                   <p className={`text-xl sm:text-2xl font-bold ${aiGeneratedConfidence > 0.75 ? 'text-red-400' : aiGeneratedConfidence > 0.5 ? 'text-yellow-400' : 'text-green-400'}`}>{Math.round(aiGeneratedConfidence * 100)}%</p>
               </div>
               <Progress value={Math.round(aiGeneratedConfidence * 100)} indicatorClassName={getConfidenceColor(aiGeneratedConfidence)} />
-              <p className="text-xs text-muted-foreground">Likelihood of being fully computer-generated.</p>
+              <p className="text-xs text-muted-foreground leading-relaxed pt-2">{analysis}</p>
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div className="space-y-4">
-                <h3 className="text-base sm:text-lg font-semibold">Detailed Analysis</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed bg-muted/30 p-4 rounded-md border border-border/50">{analysis}</p>
-            </div>
-            <div className="w-full aspect-video rounded-md overflow-hidden bg-muted">
-                {videoSrc && <video src={videoSrc} controls className="w-full h-full object-cover" data-ai-hint="video player"></video>}
-            </div>
+        <div className="w-full aspect-video rounded-md overflow-hidden bg-muted">
+            {videoSrc && <video src={videoSrc} controls className="w-full h-full object-cover" data-ai-hint="video player"></video>}
         </div>
       </CardContent>
     </Card>
