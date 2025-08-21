@@ -15,6 +15,8 @@ import { ShieldCheck, ArrowRight, GaugeCircle, ScanEye, ShieldAlert, UploadCloud
 import Header from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
+export const dynamic = 'force-dynamic';
+
 export default function LandingPage() {
   const router = useRouter();
 
